@@ -77,7 +77,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_postgres_pgloader_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postgres_pgloader_docker_image_force_pull }}"
-  when: "not matrix_postgres_pgloader_container_image_self_build"
+  when: "not matrix_postgres_pgloader_container_image_self_build and not matrix_k8s_mode | bool"
 
 # Defaults
 
