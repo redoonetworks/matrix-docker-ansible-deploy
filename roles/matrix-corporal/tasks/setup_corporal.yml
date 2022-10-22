@@ -118,4 +118,4 @@
   docker_image:
     name: "{{ matrix_corporal_docker_image }}"
     state: absent
-  when: "not matrix_corporal_enabled | bool"
+  when: "not matrix_corporal_enabled | bool and not matrix_k8s_mode | bool"
