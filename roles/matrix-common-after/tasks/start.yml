@@ -3,17 +3,19 @@
 - name: Determine whether we should make services autostart
   ansible.builtin.set_fact:
     matrix_services_autostart_enabled_bool: "{{ true if matrix_services_autostart_enabled | default('') == '' else matrix_services_autostart_enabled | bool }}"
+  when: "matrix_systemd_enable | bool"
 
 - name: Ensure systemd is reloaded
   ansible.builtin.service:
     daemon_reload: true
+  when: "matrix_systemd_enable | bool"  
 
 - name: Ensure Matrix services are stopped
   ansible.builtin.service:
     name: "{{ item }}"
     state: stopped
   with_items: "{{ matrix_systemd_services_list }}"
-  when: not ansible_check_mode
+  when: not ansible_check_mode and matrix_systemd_enable | bool
 
 - name: Ensure Matrix services are started
   ansible.builtin.service:
@@ -21,7 +23,7 @@
     enabled: "{{ matrix_services_autostart_enabled_bool }}"
     state: started
   with_items: "{{ matrix_systemd_services_list }}"
-  when: not ansible_check_mode
+  when: not ansible_check_mode and matrix_systemd_enable | bool
 
 # If we check service state immediately, we may succeed,
 # because it takes some time for the service to attempt to start and actually fail.
@@ -33,8 +35,9 @@
     timeout: "{{ matrix_common_after_systemd_service_start_wait_for_timeout_seconds }}"
   delegate_to: 127.0.0.1
   become: false
+  when: "matrix_systemd_enable | bool"
 
-- when: "ansible_distribution != 'Archlinux'"
+- when: "ansible_distribution != 'Archlinux' and matrix_systemd_enable | bool"
   block:
     - name: Populate service facts
       ansible.builtin.service_facts:
@@ -52,7 +55,7 @@
       when:
         - "item.endswith('.service') and (ansible_facts.services[item] | default(none) is none or ansible_facts.services[item].state != 'running')"
 
-- when: "ansible_distribution == 'Archlinux'"
+- when: "ansible_distribution == 'Archlinux' and matrix_systemd_enable | bool"
   block:
     # Currently there is a bug in ansible that renders is incompatible with systemd.
     # service_facts is not collecting the data successfully.
