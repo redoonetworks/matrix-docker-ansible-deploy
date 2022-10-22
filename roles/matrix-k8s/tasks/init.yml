@@ -1,0 +1,24 @@
+---
+
+- name: Configure Playbook to use Kubernetes deployment
+  ansible.builtin.set_fact:
+    # Disable Postgres at the moment
+    matrix_postgres_enabled: "false | bool"
+
+    # Dynamic DNS not needed in k8s
+    matrix_dynamic_dns_enabled: "false | bool"
+
+    # Systemd shouldn't used when k8s deployment
+    matrix_systemd_enable: "false | bool"
+
+    # do not install docker
+    matrix_docker_installation_enabled: "false | bool"
+
+    # ssl certificate will generated externally
+    matrix_ssl_retrieval_method: "none"
+
+    # Disable all self building in k8s case, because not supported
+    matrix_client_element_container_image_self_build: "false | bool"
+    matrix_mailer_container_image_self_build: "false | bool"
+
+  when: matrix_k8s_mode | bool

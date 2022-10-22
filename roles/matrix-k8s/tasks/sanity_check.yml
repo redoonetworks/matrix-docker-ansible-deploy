@@ -1,0 +1,6 @@
+---
+
+- name: check K8s mode
+  ansible.builtin.debug:
+    msg: "Enable Kubernetes mode and disable Systemd and docker usage"
+  when: matrix_k8s_mode | bool

@@ -7,6 +7,7 @@
     - roles/matrix-synapse/vars/workers.yml
 
   roles:
+    - matrix-k8s
     - matrix-base
     - matrix-dynamic-dns
     - matrix-mailer
@@ -73,3 +74,4 @@
     - matrix-postgres-backup
     - matrix-backup-borg
     - matrix-common-after
+    - matrix-k8s-after

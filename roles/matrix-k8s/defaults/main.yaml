@@ -1,0 +1,8 @@
+# K8s name usage
+matrix_k8s_resource_prefix: "{{ (matrix_domain) | replace('.', '-') }}"
+
+matrix_k8s_mode: false
+
+matrix_systemd_enable: "{{ not matrix_k8s_mode | bool }}"
+
+matrix_kustomize_resources_list: ["k8s/namespace.yaml"]
