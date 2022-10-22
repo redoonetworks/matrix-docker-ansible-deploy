@@ -34,3 +34,4 @@
   docker_image:
     name: "{{ matrix_ma1sd_docker_image }}"
     state: absent
+  when: "not matrix_k8s_mode | bool"

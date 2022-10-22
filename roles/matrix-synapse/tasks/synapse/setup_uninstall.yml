@@ -32,6 +32,7 @@
   with_items:
     - "{{ matrix_synapse_docker_image_final }}"
     - "{{ matrix_synapse_docker_image }}"
+  when: "not matrix_k8s_mode | bool"
 
 - name: Ensure sample prometheus.yml for external scraping is deleted
   ansible.builtin.file:
