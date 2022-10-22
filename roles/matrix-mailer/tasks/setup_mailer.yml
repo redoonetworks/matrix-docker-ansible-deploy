@@ -52,7 +52,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mailer_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_docker_image_force_pull }}"
-  when: "matrix_mailer_enabled | bool and not matrix_mailer_container_image_self_build | bool"
+  when: "matrix_mailer_enabled | bool and not matrix_mailer_container_image_self_build | bool and not matrix_k8s_mode"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -64,12 +64,12 @@
     dest: "{{ matrix_systemd_path }}/matrix-mailer.service"
     mode: 0644
   register: matrix_mailer_systemd_service_result
-  when: matrix_mailer_enabled | bool
+  when: matrix_mailer_enabled | bool and not matrix_k8s_mode
 
 - name: Ensure systemd reloaded after matrix-mailer.service installation
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_mailer_enabled | bool and matrix_mailer_systemd_service_result.changed"
+  when: "matrix_mailer_enabled | bool and matrix_mailer_systemd_service_result.changed and not matrix_k8s_mode"
 
 #
 # Tasks related to getting rid of the mailer (if it was previously enabled)
@@ -79,7 +79,7 @@
   ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-mailer.service"
   register: matrix_mailer_service_stat
-  when: "not matrix_mailer_enabled | bool"
+  when: "not matrix_mailer_enabled | bool and not matrix_k8s_mode"
 
 - name: Ensure matrix-mailer is stopped
   ansible.builtin.service:
@@ -88,27 +88,27 @@
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists"
+  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists and not matrix_k8s_mode"
 
 - name: Ensure matrix-mailer.service doesn't exist
   ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-mailer.service"
     state: absent
-  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists"
+  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists and not matrix_k8s_mode"
 
 - name: Ensure systemd reloaded after matrix-mailer.service removal
   ansible.builtin.service:
     daemon_reload: true
-  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists"
+  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists and not matrix_k8s_mode"
 
 - name: Ensure Matrix mailer environment variables path doesn't exist
   ansible.builtin.file:
     path: "{{ matrix_mailer_base_path }}"
     state: absent
-  when: "not matrix_mailer_enabled | bool"
+  when: "not matrix_mailer_enabled | bool and not matrix_k8s_mode"
 
 - name: Ensure mailer Docker image doesn't exist
   docker_image:
     name: "{{ matrix_mailer_docker_image }}"
     state: absent
-  when: "not matrix_mailer_enabled | bool"
+  when: "not matrix_mailer_enabled | bool and not matrix_k8s_mode | bool"
