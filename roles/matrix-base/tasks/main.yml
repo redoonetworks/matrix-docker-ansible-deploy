@@ -10,7 +10,7 @@
     - setup-all
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/server_base/setup.yml"
-  when: run_setup | bool and not mode_k8s_mode | bool
+  when: run_setup | bool and not matrix_k8s_mode | bool
   tags:
     - setup-all
 
