@@ -90,6 +90,7 @@
     dest: "{{ matrix_systemd_path }}/matrix-bot-buscarron.service"
     mode: 0644
   register: matrix_bot_buscarron_systemd_service_result
+  when: "matrix_systemd_enable | bool"
 
 - name: Ensure systemd reloaded after matrix-bot-buscarron.service installation
   ansible.builtin.service:
