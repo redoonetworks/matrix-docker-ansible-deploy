@@ -43,8 +43,9 @@
     dest: "{{ matrix_systemd_path }}/matrix-goofys.service"
     mode: 0644
   register: matrix_goofys_systemd_service_result
+  when: matrix_systemd_enable | bool
 
 - name: Ensure systemd reloaded after matrix-goofys.service installation
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_goofys_systemd_service_result.changed"
+  when: "matrix_goofys_systemd_service_result.changed and matrix_systemd_enable | bool"

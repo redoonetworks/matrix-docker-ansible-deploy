@@ -64,12 +64,12 @@
     dest: "{{ matrix_systemd_path }}/matrix-mailer.service"
     mode: 0644
   register: matrix_mailer_systemd_service_result
-  when: matrix_mailer_enabled | bool and not matrix_k8s_mode
+  when: matrix_mailer_enabled | bool and matrix_systemd_enable | bool
 
 - name: Ensure systemd reloaded after matrix-mailer.service installation
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_mailer_enabled | bool and matrix_mailer_systemd_service_result.changed and not matrix_k8s_mode"
+  when: "matrix_mailer_enabled | bool and matrix_mailer_systemd_service_result.changed and matrix_systemd_enable | bool"
 
 #
 # Tasks related to getting rid of the mailer (if it was previously enabled)
