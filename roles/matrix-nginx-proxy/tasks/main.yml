@@ -18,6 +18,13 @@
     - setup-all
     - setup-nginx-proxy
     - setup-ssl
+    
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/k8s.yml"
+  when: run_setup | bool
+  tags:
+    - setup-all
+    - setup-k8s
+    - setup-nginx-proxy
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_nginx_proxy.yml"
   when: run_setup | bool
