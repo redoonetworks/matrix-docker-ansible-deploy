@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-matrix-synapse
+  labels:
+    app: synapse
+    chat: {{ .Values.Vars.matrix_server_fqn_matrix }}
+spec:
+  ports:
+  - port: 8008
+    name: http
+  - port: 8448
+    name: federation
+  clusterIP: None
+  selector:
+    app: {{ .Release.Name }}-synapse

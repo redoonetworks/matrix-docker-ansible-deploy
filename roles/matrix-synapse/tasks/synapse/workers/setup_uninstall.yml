@@ -29,9 +29,11 @@
     patterns: "matrix-synapse-worker.*.service"
     use_regex: true
   register: matrix_synapse_workers_current_systemd_services
+  when: matrix_systemd_enable | bool
 
 - name: Ensure previous worker systemd services are cleaned
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"
+  when: "matrix_systemd_enable | bool"

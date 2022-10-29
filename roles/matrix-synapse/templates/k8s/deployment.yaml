@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-synapse
+  labels:
+    app: {{ .Release.Name }}-synapse
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-synapse
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-synapse
+        {{- if .Values.synapse.podLabels }}
+          {{ toYaml .Values.synapse.podLabels | nindent 8 }}
+        {{- end }}         
+    spec:
+      containers:
+      - image: {{ .Values.synapse.image }}
+        name: {{ .Release.Name }}-synapse
+
+        resources:
+          limits:
+            cpu: "250m"
+            memory: "300Mi"
+          requests:
+            cpu: "150m"
+            memory: "200Mi"      
+        readinessProbe:
+          tcpSocket:
+            port: 8008
+          initialDelaySeconds: 5
+          periodSeconds: 10  
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: "synapse-config"
+          mountPath: "/data/homeserver.yaml"
+          subPath: "homeserver.yaml"
+        - name: "synapse-config"
+          mountPath: "/data/{{ .Values.Vars.matrix_server_fqn_matrix }}.log.config"
+          subPath: "{{ .Values.Vars.matrix_server_fqn_matrix }}.log.config"
+        - name: "synapse-secret"
+          mountPath: "/data/{{ .Values.Vars.matrix_server_fqn_matrix }}.signing.key"
+          subPath: "signing.key"
+        ports:
+        - containerPort: 8008
+          name: http        
+        - containerPort: 8448
+          name: federation          
+
+      volumes:
+        - name: "synapse-config"
+          configMap:
+            name: "{{ .Release.Name }}-synapse-cm"          
+        - name: "synapse-secret"
+          secret:
+            secretName: {{ .Release.Name }}-synapse-secret

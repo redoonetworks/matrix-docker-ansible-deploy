@@ -56,7 +56,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_synapse_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_docker_image_force_pull }}"
-  when: "not matrix_synapse_container_image_self_build"
+  when: "not matrix_synapse_container_image_self_build and not matrix_k8s_mode | bool"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -106,7 +106,7 @@
     -e SYNAPSE_REPORT_STATS=no
     {{ matrix_synapse_docker_image }}
     generate
-  when: "not matrix_synapse_signing_key_stat.stat.exists"
+  when: "not matrix_synapse_signing_key_stat.stat.exists and not matrix_k8s_mode | bool"
 
 - name: Ensure Synapse homeserver config installed
   ansible.builtin.copy:
@@ -128,17 +128,19 @@
     dest: "{{ matrix_systemd_path }}/matrix-synapse.service"
     mode: 0644
   register: matrix_synapse_systemd_service_result
+  when: "matrix_systemd_enable | bool"
 
 - name: Ensure systemd reloaded after matrix-synapse.service installation
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_synapse_systemd_service_result.changed"
+  when: "matrix_synapse_systemd_service_result.changed and matrix_systemd_enable | bool"
 
 - name: Ensure matrix-synapse-register-user script created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/usr-local-bin/matrix-synapse-register-user.j2"
     dest: "{{ matrix_local_bin_path }}/matrix-synapse-register-user"
     mode: 0755
+  when: "not matrix_k8s_mode | bool"
 
 - name: Generate sample prometheus.yml for external scraping
   ansible.builtin.template:

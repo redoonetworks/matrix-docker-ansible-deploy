@@ -6,6 +6,7 @@
   ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-synapse.service.wants"
     state: absent
+  when: matrix_systemd_enable | bool
 
 # Same. This was part of a previous version of the worker setup.
 # No longer necessary.
