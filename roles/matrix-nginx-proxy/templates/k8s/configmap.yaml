@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-nginx-proxy-confd
 data:
-{{ (.Files.Glob "nginx-proxy/conf.d/*.conf").AsConfig | replace "127.0.0.11" .Values.nginxproxy.resolver | replace "matrix-synapse:8008" .Values.nginxproxy.client_api_backend | indent 2 }}
+{{ (.Files.Glob "nginx-proxy/conf.d/*.conf").AsConfig | indent 2 }}
 ---
 apiVersion: v1
 kind: ConfigMap

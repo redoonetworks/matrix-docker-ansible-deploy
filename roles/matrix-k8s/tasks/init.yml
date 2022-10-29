@@ -39,6 +39,9 @@
 
     matrix_nginx_proxy_enabled: true
     matrix_nginx_proxy_https_enabled: false
-    
-    matrix_synapse_client_api_backend: "{{ matrix_k8s_resource_prefix }}-matrix-synapse.{{ matrix_k8s_namespace }}.svc.cluster.local:{{ matrix_synapse_container_client_api_port }}"
+    matrix_nginx_proxy_http_level_resolver: "{{ matrix_nginx_proxy_k8s_coredns_ip }}"
+
+    matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "{{ matrix_k8s_resource_prefix }}-matrix-synapse.{{ matrix_k8s_namespace }}.svc.cluster.local:{{ matrix_synapse_container_federation_api_plain_port }}"
+    matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: "{{ matrix_k8s_resource_prefix }}-matrix-synapse.{{ matrix_k8s_namespace }}.svc.cluster.local:{{ matrix_synapse_container_client_api_port }}"
+
   when: matrix_k8s_mode | bool
