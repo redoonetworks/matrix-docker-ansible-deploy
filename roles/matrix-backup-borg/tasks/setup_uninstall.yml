@@ -36,7 +36,7 @@
     state: absent
 
 - name: Ensure borg Docker image doesn't exist
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_backup_borg_docker_image }}"
     state: absent
   when: "not matrix_k8s_mode | bool"

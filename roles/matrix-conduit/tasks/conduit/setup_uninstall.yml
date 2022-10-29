@@ -25,7 +25,7 @@
   when: "matrix_conduit_service_stat.stat.exists"
 
 - name: Ensure Conduit Docker image doesn't exist
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_conduit_docker_image }}"
     state: absent
   when: "not matrix_k8s_mode | bool"
