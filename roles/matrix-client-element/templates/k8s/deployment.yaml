@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-client-element
+  labels:
+    role: matrix-client-element
+{{ include "deployment.selector" . | indent 4 }}      
+spec:
+  selector:
+    matchLabels:
+      role: matrix-client-element
+{{ include "deployment.selector" . | indent 6 }}        
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: matrix-client-element
+{{ include "deployment.selector" . | indent 8 }}
+        {{- if .Values.client_element.podLabels }}
+          {{ toYaml .Values.client_element.podLabels | nindent 8 }}
+        {{- end }}         
+    spec:
+      containers:
+      - image: {{ .Values.client_element.image }}
+        name: {{ .Release.Name }}-client-element
+
+        resources:
+          limits:
+            cpu: "150m"
+            memory: "128Mi"
+          requests:
+            cpu: "50m"
+            memory: "48Mi"      
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: "client-element-config"
+          mountPath: "/etc/nginx/nginx.conf"
+          subPath: "nginx.conf"
+        - name: "client-element-config"
+          mountPath: "/app/config.json"
+          subPath: "config.json"
+        - name: "client-element-config"
+          mountPath: "/app/config.{{ .Values.Vars.matrix_server_fqn_element }}.json"
+          subPath: "config.json"
+        - name: "client-element-config"
+          mountPath: "/app/welcome.html"
+          subPath: "welcome.html"
+        ports:
+        - containerPort: 8008
+          name: http        
+        - containerPort: 8448
+          name: federation          
+
+      volumes:
+        - name: "client-element-config"
+          configMap:
+            name: "{{ .Release.Name }}-client-element"          
