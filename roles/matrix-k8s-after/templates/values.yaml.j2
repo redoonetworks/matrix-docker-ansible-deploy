@@ -1,16 +1,28 @@
 Release:
-  Name: {{ matrix_k8s_namespace }}
+  Name: {{ matrix_k8s_resource_prefix }}
 
 namespace: 
   name: {{ matrix_k8s_namespace }}
-  labels: {{ matrix_k8s_namespace_labels|to_json }}
+  labels: {{ matrix_k8s_namespace_labels | to_json }}
+
+# role specific topics:
+client_element:
+    image: {{ matrix_client_element_docker_image }}
+    podLabels: {{ matrix_k8s_client_element_podlabels | to_json }}
 
 synapse:
   image: ghcr.io/swarnat/matrix-synapse-k8s:v1.69.0
-  podLabels: {{ matrix_k8s_synapse_podlabels|to_json }}
+  podLabels: {{ matrix_k8s_synapse_podlabels | to_json }}
 
+synapse_admin:
+  image: {{ matrix_synapse_admin_docker_image }}
+  podLabels: {{ matrix_k8s_synapse_admin_podlabels | to_json }}
+
+
+# Transfer ansible vars to helm vars
 Vars:
   matrix_server_fqn_matrix: {{ matrix_server_fqn_matrix }}
+  matrix_server_fqn_element: {{ matrix_server_fqn_element }}
 
   matrix_nginx_proxy_docker_image: {{ matrix_nginx_proxy_docker_image }}
 

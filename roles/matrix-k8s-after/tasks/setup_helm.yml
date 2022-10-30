@@ -39,4 +39,6 @@
     mode: 0660
   loop:
     - "namespace.yaml"
+    - "_helpers.tpl"
   when: matrix_k8s_mode | bool
+

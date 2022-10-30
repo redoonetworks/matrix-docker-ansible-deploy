@@ -12,7 +12,10 @@ matrix_kustomize_resources_list: ["k8s/namespace.yaml"]
 matrix_helm_data_path: "{{ matrix_base_data_path }}"
 
 matrix_k8s_synapse_podlabels: []
+matrix_k8s_synapse_admin_podlabels: []
+matrix_k8s_client_element_podlabels: []
 
 matrix_k8s_namespace_labels: []
 
 matrix_nginx_proxy_k8s_coredns_ip: "10.43.0.10"
+matrix_nginx_proxy_k8s_svc_replacements: []
