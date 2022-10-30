@@ -21,7 +21,7 @@
           location /metrics/node-exporter {
             {% if matrix_nginx_proxy_enabled | default(False) %}
               {# Use the embedded DNS resolver in Docker containers to discover the service #}
-              resolver 127.0.0.11 valid=5s;
+              resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
               set $backend "matrix-prometheus-node-exporter:9100";
               proxy_pass http://$backend/metrics;
             {% elif matrix_prometheus_node_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host != '' %}

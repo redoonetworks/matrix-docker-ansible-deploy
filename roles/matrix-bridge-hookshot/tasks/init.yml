@@ -45,7 +45,7 @@
           location ~ ^{{ matrix_hookshot_appservice_endpoint }}/(.*)$ {
             {% if matrix_nginx_proxy_enabled | default(False) %}
               {# Use the embedded DNS resolver in Docker containers to discover the service #}
-              resolver 127.0.0.11 valid=5s;
+              resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
               set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_appservice_port }}";
               proxy_pass http://$backend/$1;
             {% else %}
@@ -58,7 +58,7 @@
           location ~ ^{{ matrix_hookshot_provisioning_endpoint }}/(.*)$ {
             {% if matrix_nginx_proxy_enabled | default(False) %}
               {# Use the embedded DNS resolver in Docker containers to discover the service #}
-              resolver 127.0.0.11 valid=5s;
+              resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
               set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_provisioning_port }}";
               proxy_pass http://$backend{{ matrix_hookshot_provisioning_internal }}/$1$is_args$args;
             {% else %}
@@ -72,7 +72,7 @@
           location ~ ^{{ matrix_hookshot_widgets_endpoint }}/(.*)$ {
             {% if matrix_nginx_proxy_enabled | default(False) %}
               {# Use the embedded DNS resolver in Docker containers to discover the service #}
-              resolver 127.0.0.11 valid=5s;
+              resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
               set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_widgets_port }}";
               proxy_pass http://$backend{{ matrix_hookshot_widgets_internal }}/$1$is_args$args;
             {% else %}
@@ -85,7 +85,7 @@
           location ~ ^{{ matrix_hookshot_webhook_endpoint }}/(.*)$ {
             {% if matrix_nginx_proxy_enabled | default(False) %}
               {# Use the embedded DNS resolver in Docker containers to discover the service #}
-              resolver 127.0.0.11 valid=5s;
+              resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
               set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_webhook_port }}";
               proxy_pass http://$backend/$1$is_args$args;
             {% else %}
@@ -110,7 +110,7 @@
           location /metrics/hookshot {
             {% if matrix_nginx_proxy_enabled | default(False) %}
               {# Use the embedded DNS resolver in Docker containers to discover the service #}
-              resolver 127.0.0.11 valid=5s;
+              resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
               set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_metrics_port }}";
               proxy_pass http://$backend/metrics;
             {% else %}
