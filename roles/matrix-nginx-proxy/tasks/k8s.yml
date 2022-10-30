@@ -22,6 +22,24 @@
     - "ingress.yaml"
   when: matrix_k8s_mode | bool
 
+
+- name: Find all conf.d files inside confd directory
+  find:
+    paths: "{{ matrix_nginx_proxy_confd_path }}"
+    patterns: "*.conf"
+  register: nginx_proxy_confd_files
+
+- name: Replace container names with k8s compatible names
+  replace:
+    path: "{{ item.path }}"
+    regexp: 'set \$backend \"({{ matrix_nginx_proxy_k8s_svc_replacements | join("|") }}):'
+    replace: 'set $backend "{{ matrix_k8s_resource_prefix }}-\1.{{ matrix_k8s_namespace }}.svc.cluster.local:'
+  with_items: "{{ nginx_proxy_confd_files.files }}"
+
+- name: Debug regex
+  debug:
+    msg: 'set \$backend \"({{ matrix_nginx_proxy_k8s_svc_replacements | join("|") }}):'
+
 # - name: copy matrix-synapse helm templates
 #   ansible.builtin.template:
 #     src: "{{ item.src }}"

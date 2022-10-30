@@ -3,18 +3,21 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-nginx-proxy
   labels:
-    app: nginx-proxy
+    role: matrix-nginx-proxy
+{{ include "deployment.selector" . | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-nginx-proxy
+      role: matrix-nginx-proxy
+{{ include "deployment.selector" . | indent 6 }}      
   strategy:
     type: RollingUpdate
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-nginx-proxy
+        role: matrix-nginx-proxy
+{{ include "deployment.selector" . | indent 8 }}
     spec:
       containers:
       - image: {{ .Values.Vars.matrix_nginx_proxy_docker_image }}
@@ -26,11 +29,12 @@ spec:
             memory: "128Mi"
           requests:
             cpu: "50m"
-            memory: "32Mi"      
+            memory: "32Mi"
+
         readinessProbe:
           tcpSocket:
             port: 8080
-          initialDelaySeconds: 5
+          initialDelaySeconds: 2
           periodSeconds: 10  
         imagePullPolicy: Always
         volumeMounts:

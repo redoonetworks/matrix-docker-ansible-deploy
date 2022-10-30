@@ -17,7 +17,17 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: matrix-nginx-proxy
+                name: {{ .Release.Name }}-matrix-nginx-proxy
+                port:
+                  number: 8080
+    - host: {{ .Values.Vars.matrix_server_fqn_element }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-matrix-nginx-proxy
                 port:
                   number: 8080
     - host: {{ .Values.Vars.matrix_domain }}
@@ -27,11 +37,12 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: matrix-nginx-proxy
+                name: {{ .Release.Name }}-matrix-nginx-proxy
                 port:
                   number: 8080
   tls: 
   - hosts:
     - {{ .Values.Vars.matrix_server_fqn_matrix }}
+    - {{ .Values.Vars.matrix_server_fqn_element }}
     - {{ .Values.Vars.matrix_domain }}
     secretName: {{ .Release.Name }}-cert

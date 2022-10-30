@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: matrix-nginx-proxy
+  name: {{ .Release.Name }}-matrix-nginx-proxy
   labels:
-    app: nginx-proxy
-    chat: {{ .Values.Vars.matrix_server_fqn_matrix }}
+    role: matrix-nginx-proxy
+{{ include "deployment.selector" . | indent 4 }}
 spec:
   ports:
   - port: 8080
@@ -14,18 +14,21 @@ spec:
     name: http-synapse
   clusterIP: None
   selector:
-    app: {{ .Release.Name }}-nginx-proxy
+    role: matrix-nginx-proxy
+{{ include "deployment.selector" . | indent 4 }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: matrix-synapse-federation
+  name: {{ .Release.Name }}-matrix-synapse-federation
   labels:
-    app: {{ .Release.Name }}-nginx-proxy
+    role: matrix-nginx-proxy
+{{ include "deployment.selector" . | indent 4 }}
 spec:
   ports:
   - port: 8448
     name: http
   clusterIP: None
   selector:
-    app: {{ .Release.Name }}-nginx-proxy
+    role: matrix-nginx-proxy
+{{ include "deployment.selector" . | indent 4 }}
