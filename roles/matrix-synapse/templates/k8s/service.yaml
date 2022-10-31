@@ -4,8 +4,8 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-matrix-synapse
   labels:
-    app: synapse
-    chat: {{ .Values.Vars.matrix_server_fqn_matrix }}
+    role: matrix-synapse
+{{ include "deployment.selector" . | indent 4 }}  
 spec:
   ports:
   - port: 8008
@@ -14,4 +14,5 @@ spec:
     name: federation
   clusterIP: None
   selector:
-    app: {{ .Release.Name }}-synapse
+    role: matrix-synapse
+{{ include "deployment.selector" . | indent 4 }}      

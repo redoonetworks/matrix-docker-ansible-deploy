@@ -8,4 +8,10 @@ data:
 {% raw %}{{ .Files.Get "synapse/config/homeserver.yaml" | indent 4 }}{% endraw %}
 
   {{ matrix_server_fqn_matrix }}.log.config: |-
-{% raw %}{{ .Files.Get (printf "synapse/config/%s.log.config" .Values.Vars.matrix_server_fqn_matrix) | indent 4 }}{% endraw %}
+{% raw %}{{ .Files.Get (printf "synapse/config/%s.log.config" .Values.Vars.matrix_server_fqn_matrix) | indent 4 }}
+
+{{- range $index, $val := .Values.synapse.additionalMounts }}
+  {{ $val.id }}: |-
+{{ $.Files.Get $val.src | indent 4  }}
+{{- end }}   
+{% endraw %}

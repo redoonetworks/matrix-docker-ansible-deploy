@@ -3,18 +3,21 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-synapse
   labels:
-    app: {{ .Release.Name }}-synapse
+    role: matrix-synapse
+{{ include "deployment.selector" . | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-synapse
+      role: matrix-synapse
+{{ include "deployment.selector" . | indent 6 }}      
   strategy:
     type: RollingUpdate
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-synapse
+        role: matrix-synapse
+{{ include "deployment.selector" . | indent 8 }}
         {{- if .Values.synapse.podLabels }}
           {{ toYaml .Values.synapse.podLabels | nindent 8 }}
         {{- end }}         
@@ -46,6 +49,11 @@ spec:
         - name: "synapse-secret"
           mountPath: "/data/{{ .Values.Vars.matrix_server_fqn_matrix }}.signing.key"
           subPath: "signing.key"
+{{- range $index, $val := .Values.synapse.additionalMounts }}
+        - name: "synapse-config"
+          mountPath: "{{ $val.dest }}"
+          subPath: "{{ $val.id }}"
+{{- end }}
         ports:
         - containerPort: 8008
           name: http        
