@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-synapse-admin
+  labels:
+    role: matrix-synapse-admin
+{{ include "deployment.selector" . | indent 4 }}      
+spec:
+  selector:
+    matchLabels:
+      role: matrix-synapse-admin
+{{ include "deployment.selector" . | indent 6 }}        
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: matrix-synapse-admin
+{{ include "deployment.selector" . | indent 8 }}
+        {{- if .Values.synapse_admin.podLabels }}
+          {{ toYaml .Values.synapse_admin.podLabels | nindent 8 }}
+        {{- end }}         
+    spec:
+      containers:
+      - image: {{ .Values.synapse_admin.image }}
+        name: {{ .Release.Name }}-synapse-admin
+        env:
+          - name: REACT_APP_SERVER
+            value: "https://{{ .Values.Vars.matrix_server_fqn_matrix }}"
+        resources:
+          limits:
+            cpu: "150m"
+            memory: "128Mi"
+          requests:
+            cpu: "50m"
+            memory: "48Mi"      
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http        
