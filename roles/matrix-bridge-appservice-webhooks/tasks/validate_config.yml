@@ -11,3 +11,9 @@
     - "matrix_appservice_webhooks_homeserver_token"
     - "matrix_appservice_webhooks_id_token"
     - "matrix_appservice_webhooks_api_secret"
+
+- name: "Fail when self building in nk8s mode"
+  ansible.builtin.fail:
+    msg: >-
+      In Kubernetes mode it is not possible to use self build images. Please publish them within a available image registry.
+  when: "matrix_k8s_mode | bool and matrix_appservice_webhooks_container_image_self_build | bool"

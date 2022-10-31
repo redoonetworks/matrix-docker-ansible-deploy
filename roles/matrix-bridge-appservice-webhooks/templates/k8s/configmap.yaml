@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-bridge-appservice-webhooks
+data:
+  database.json: |-
+{{ .Files.Get "appservice-webhooks/data/database.json" | indent 4 }}
+  
+  config.yaml: |-
+{{ .Files.Get "appservice-webhooks/config/config.yaml" | indent 4 }}
+  
+  schema.yml: |-
+{{ .Files.Get "appservice-webhooks/config/schema.yml" | indent 4 }}
+  
+  webhooks-registration.yaml: |-
+{{ .Files.Get "appservice-webhooks/config/webhooks-registration.yaml" | indent 4 }}
+  

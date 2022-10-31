@@ -1,0 +1,32 @@
+---
+- name: Ensure helm templates folder exists
+  ansible.builtin.file:
+    path: "{{ matrix_helm_data_path }}/templates/{{ role_name }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Find all conf.d files inside confd directory
+  find:
+    paths: "{{ role_path }}/templates/k8s/"
+    patterns: "*.yaml"
+  register: k8s_helm_template_files
+
+- name: copy helm templates
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0660
+  with_items: "{{ k8s_helm_template_files.files }}"
+
+- ansible.builtin.set_fact:
+    matrix_nginx_proxy_k8s_svc_replacements: "{{ matrix_nginx_proxy_k8s_svc_replacements + ['matrix-appservice-webhooks'] }}"
+    matrix_appservice_webhooks_appservice_url: "http://{{ matrix_k8s_resource_prefix }}-matrix-appservice-webhooks.{{ matrix_k8s_namespace }}.svc.cluster.local"
+    matrix_k8s_synapse_additional_mounts: "{{ matrix_k8s_synapse_additional_mounts + [{'id': 'matrix-appservice-webhooks-registration.yaml', 'src': 'appservice-webhooks/config/webhooks-registration.yaml', 'dest': '/matrix-appservice-webhooks-registration.yaml' }] }}"    
+    matrix_appservice_webhooks_database_driver: 'postgres'
+
+    
+    

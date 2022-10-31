@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-bridge-appservice-webhooks
+  labels:
+    role: matrix-bridge-appservice-webhooks
+{{ include "deployment.selector" . | indent 4 }}      
+spec:
+  selector:
+    matchLabels:
+      role: matrix-bridge-appservice-webhooks
+{{ include "deployment.selector" . | indent 6 }}        
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      annotations: 
+        checksum/config: {{ include (print $.Template.BasePath "/matrix-bridge-appservice-webhooks/configmap.yaml") . | sha256sum }}
+      labels:
+        role: matrix-bridge-appservice-webhooks
+{{ include "deployment.selector" . | indent 8 }}
+        {{- if .Values.appservice_webhooks.podLabels }}
+          {{ toYaml .Values.appservice_webhooks.podLabels | nindent 8 }}
+        {{- end }}         
+    spec:
+      containers:
+      - image: {{ .Values.appservice_webhooks.image }}
+        name: {{ .Release.Name }}-bridge-appservice-webhooks
+        # env:
+        #   - name: REACT_APP_SERVER
+        #     value: "https://{{ .Values.Vars.matrix_server_fqn_matrix }}"
+        resources:
+          limits:
+            cpu: "150m"
+            memory: "128Mi"
+          requests:
+            cpu: "50m"
+            memory: "48Mi"
+        command: ["node"]
+        args: ["index.js","-p", "6789", "-c", "/config/config.yaml","-f", "/config/webhooks-registration.yaml"]
+        volumeMounts:
+        - name: "appservice-webhooks-config"
+          mountPath: "/data/database.json"
+          subPath: "database.json"
+        - name: "appservice-webhooks-config"
+          mountPath: "/config/config.yaml"
+          subPath: "config.yaml"
+        - name: "appservice-webhooks-config"
+          mountPath: "/config/schema.yml"
+          subPath: "schema.yml"
+        - name: "appservice-webhooks-config"
+          mountPath: "/config/webhooks-registration.yaml"
+          subPath: "webhooks-registration.yaml"
+        readinessProbe:
+          tcpSocket:
+            port: 6789
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6789
+          name: http        
+      volumes:
+        - name: "appservice-webhooks-config"
+          configMap:
+            name: "{{ .Release.Name }}-bridge-appservice-webhooks"

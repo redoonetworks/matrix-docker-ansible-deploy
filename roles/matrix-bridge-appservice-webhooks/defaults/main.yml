@@ -81,3 +81,9 @@ matrix_appservice_webhooks_registration_yaml: |
   protocols: null
 
 matrix_appservice_webhooks_registration: "{{ matrix_appservice_webhooks_registration_yaml | from_yaml }}"
+
+matrix_appservice_webhooks_database_driver: 'sqlite'
+matrix_appservice_webhooks_database_host: '{{ matrix_synapse_database_host }}'
+matrix_appservice_webhooks_database_port: '{{ matrix_synapse_database_port }}'
+matrix_appservice_webhooks_database_username: '{{ matrix_synapse_database_user }}'
+matrix_appservice_webhooks_database_password: '{{ matrix_synapse_database_password }}'
