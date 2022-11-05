@@ -7,46 +7,44 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- ansible.builtin.set_fact:
+    matrix_nginx_proxy_k8s_svc_replacements: "{{ matrix_nginx_proxy_k8s_svc_replacements + ['matrix-synapse'] }}"
+
+    matrix_k8s_configuration: "{{ matrix_synapse_k8s_configuration_default|combine(addMountConfig, recursive=true)|combine(matrix_synapse_k8s_configuration_custom, recursive=true) }}"
+
+    resourceName: "{{ role_name|replace('matrix-','') }}"
+  vars:
+    addMountConfig:
+      files:
+        config: "{{ matrix_synapse_k8s_configuration_default.files.config + matrix_k8s_homeserver_additional_mounts }}"
+
+# Default for all roles
+- name: Find all conf.d files inside confd directory
+  find:
+    paths: "{{ role_path }}/templates/k8s/"
+    patterns: "*.yaml"
+  register: k8s_helm_template_files
+
 - name: copy helm templates
   ansible.builtin.copy:
-    src: "{{ role_path }}/templates/k8s/{{ item }}"
+    src: "{{ item.path }}"
     dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     mode: 0660
-  loop:
-    - "configuration-scripts.yaml"  
-    - "deployment.yaml"  
-    - "service.yaml"
-    - "secret.yaml"
-    - "signing-key-job.yaml"
-  when: matrix_k8s_mode | bool
+  with_items: "{{ k8s_helm_template_files.files }}"
 
-- name: copy matrix-synapse scripts 
-  ansible.builtin.copy:
-    src: "{{ role_path }}/templates/k8s/scripts"
-    dest: "{{ matrix_helm_data_path }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-    mode: 0660
-  when: matrix_k8s_mode | bool
-  
-- name: copy matrix-synapse local scripts 
-  ansible.builtin.copy:
-    src: "{{ role_path }}/templates/k8s/local_scripts"
-    dest: "{{ matrix_helm_data_path }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-    mode: 0660
-  when: matrix_k8s_mode | bool
+- name: Find all jinja2 files inside templates directory
+  find:
+    paths: "{{ role_path }}/templates/k8s/"
+    patterns: "*.j2"
+  register: k8s_helm_template_files
 
-- name: process jinja2 templates and create helm template
+- name: copy helm templates
   ansible.builtin.template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
+    src: "{{ item.path }}"
+    dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/{{ item.path|basename|replace('.j2', '') }}"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     mode: 0660
-  with_items:
-    - { src: "{{ role_path }}/templates/k8s/configmap.yaml.j2", dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/configmap.yaml" }    
-  when: matrix_k8s_mode | bool
+  with_items: "{{ k8s_helm_template_files.files }}"

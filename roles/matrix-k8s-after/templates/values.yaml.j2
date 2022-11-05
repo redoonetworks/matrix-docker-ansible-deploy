@@ -5,16 +5,11 @@ namespace:
   name: {{ matrix_k8s_namespace }}
   labels: {{ matrix_k8s_namespace_labels | to_json }}
 
-# role specific topics:
-client_element:
-    image: {{ matrix_client_element_docker_image }}
-    podLabels: {{ matrix_k8s_client_element_podlabels | to_json }}
-
-synapse:
+{# synapse:
   image: ghcr.io/swarnat/matrix-synapse-k8s:v1.70.1
-  podLabels: {{ matrix_k8s_synapse_podlabels | to_json }}
+  podLabels: {{ matrix_k8s_synapse_podlabels | to_json }} #}
 
-  additionalMounts: {{ matrix_k8s_synapse_additional_mounts | to_json }}
+  {# additionalMounts: {{ matrix_k8s_homeserver_additional_mounts | to_json }} #}
 
 synapse_admin:
   image: {{ matrix_synapse_admin_docker_image }}
@@ -24,6 +19,15 @@ appservice_webhooks:
   image: {{ matrix_appservice_webhooks_docker_image }}
   podLabels: {{ matrix_k8s_appservice_webhooks_podlabels | to_json }}
 
+bridge_hookshot:
+  image: {{ matrix_hookshot_docker_image }}
+  podLabels: {{ matrix_k8s_bridge_hookshots_podlabels | to_json }}
+
+podLabels:
+  {{ matrix_k8s_podLabels | to_nice_yaml }}
+
+matrix_k8s_images:
+  {{ matrix_k8s_images | to_nice_yaml }}
 
 # Transfer ansible vars to helm vars
 Vars:

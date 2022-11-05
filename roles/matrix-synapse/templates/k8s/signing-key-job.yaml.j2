@@ -1,17 +1,15 @@
-{{- $name := (printf "%s-signingkey-job" .Release.Name) }}
-{{- $secretName := (printf "%s-synapse-secret" .Release.Name) }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Release.Name }}-signingkey-job
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
   labels:
     app.kubernetes.io/component: signingkey-job
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ $name }}
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
   labels:
     app.kubernetes.io/component: signingkey-job
 rules:
@@ -20,7 +18,7 @@ rules:
     resources:
       - secrets
     resourceNames:
-      - {{ $secretName }}
+      - {{ matrix_k8s_resource_prefix }}-synapse
     verbs:
       - get
       - update
@@ -29,22 +27,22 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ $name }}
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
   labels:
     app.kubernetes.io/component: signingkey-job
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ $name }}
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
 subjects:
   - kind: ServiceAccount
-    name: {{ $name }}
-    namespace: {{ .Release.Namespace }}
+    name: {{ matrix_k8s_resource_prefix }}-signingkey-job
+    namespace: {{ matrix_k8s_namespace }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ $name }}
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
   labels:
     app.kubernetes.io/component: signingkey-job
 spec:
@@ -80,7 +78,7 @@ spec:
               /scripts/signing-key.sh
           env:
             - name: SECRET_NAME
-              value: {{ $secretName }}
+              value: {{ matrix_k8s_resource_prefix }}-synapse
           image: "bitnami/kubectl:latest"
           imagePullPolicy: "IfNotPresent"
           name: signing-key-upload
@@ -92,11 +90,11 @@ spec:
               name: matrix-synapse-keys
               readOnly: true
       restartPolicy: Never
-      serviceAccount: {{ $name }}
+      serviceAccount: {{ matrix_k8s_resource_prefix }}-signingkey-job
       volumes:
         - name: scripts
           configMap:
-            name: {{ .Release.Name }}-scripts
+            name: {{ matrix_k8s_resource_prefix }}-synapse-scripts
             defaultMode: 0755
         - name: matrix-synapse-keys
           emptyDir: {}

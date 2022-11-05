@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-nginx-proxy
+  name: {{ matrix_k8s_resource_prefix }}-nginx-proxy
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "256m"
     nginx.org/client-max-body-size: "256m"
@@ -10,39 +10,39 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: {{ .Values.Vars.matrix_server_fqn_matrix }}
+    - host: {{ matrix_server_fqn_matrix }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-matrix-nginx-proxy
+                name: {{ matrix_k8s_resource_prefix }}-matrix-nginx-proxy
                 port:
                   number: 8080
-    - host: {{ .Values.Vars.matrix_server_fqn_element }}
+    - host: {{ matrix_server_fqn_element }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-matrix-nginx-proxy
+                name: {{ matrix_k8s_resource_prefix }}-matrix-nginx-proxy
                 port:
                   number: 8080
-    - host: {{ .Values.Vars.matrix_domain }}
+    - host: {{ matrix_domain }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-matrix-nginx-proxy
+                name: {{ matrix_k8s_resource_prefix }}-matrix-nginx-proxy
                 port:
                   number: 8080
   tls: 
   - hosts:
-    - {{ .Values.Vars.matrix_server_fqn_matrix }}
-    - {{ .Values.Vars.matrix_server_fqn_element }}
-    - {{ .Values.Vars.matrix_domain }}
-    secretName: {{ .Release.Name }}-cert
+    - {{ matrix_server_fqn_matrix }}
+    - {{ matrix_server_fqn_element }}
+    - {{ matrix_domain }}
+    secretName: {{ matrix_k8s_resource_prefix }}-cert

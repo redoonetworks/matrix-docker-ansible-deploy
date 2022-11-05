@@ -1,5 +1,4 @@
 ---
-    
 - name: Ensure matrix-nginx-proxy helm templates folder exists
   ansible.builtin.file:
     path: "{{ matrix_helm_data_path }}/templates/matrix-nginx-proxy"
@@ -8,26 +7,45 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: copy matrix-nginx-proxy helm templates
+- name: Find all conf.d files inside confd directory
+  find:
+    paths: "{{ role_path }}/templates/k8s/"
+    patterns: "*.yaml"
+  register: k8s_helm_template_files
+
+- name: copy helm templates
   ansible.builtin.copy:
-    src: "{{ role_path }}/templates/k8s/{{ item }}"
-    dest: "{{ matrix_helm_data_path }}/templates/matrix-nginx-proxy/"
+    src: "{{ item.path }}"
+    dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     mode: 0660
-  loop:
-    - "configmap.yaml"
-    - "deployment.yaml"
-    - "service.yaml"
-    - "ingress.yaml"
-  when: matrix_k8s_mode | bool
+  with_items: "{{ k8s_helm_template_files.files }}"
 
+- name: Find all jinja2 files inside templates directory
+  find:
+    paths: "{{ role_path }}/templates/k8s/"
+    patterns: "*.j2"
+  register: k8s_helm_template_files
+
+- name: copy helm templates
+  ansible.builtin.template:
+    src: "{{ item.path }}"
+    dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/{{ item.path|basename|replace('.j2', '') }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0660
+  with_items: "{{ k8s_helm_template_files.files }}"
 
 - name: Find all conf.d files inside confd directory
   find:
     paths: "{{ matrix_nginx_proxy_confd_path }}"
     patterns: "*.conf"
   register: nginx_proxy_confd_files
+
+- name: Replace container hostnames
+  debug:
+    msg: "{{ matrix_nginx_proxy_k8s_svc_replacements }}"
 
 - name: Replace container names with k8s compatible names
   replace:

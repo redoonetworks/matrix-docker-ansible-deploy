@@ -1,0 +1,3 @@
+{% raw %}{{-{% endraw %} define "deployment.selector" -}}
+{{ matrix_k8s_selector|to_nice_yaml -}}
+{% raw %}{{-{% endraw %} end -}}

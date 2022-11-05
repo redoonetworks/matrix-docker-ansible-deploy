@@ -31,3 +31,29 @@ matrix_synapse_admin_container_http_host_bind_port: ''
 # The path at which Synapse Admin will be exposed on `matrix.DOMAIN`
 # (only applies when matrix-nginx-proxy is used).
 matrix_synapse_admin_public_endpoint: /synapse-admin
+
+matrix_synapse_admin_k8s_configuration_custom: {}
+matrix_synapse_admin_k8s_configuration_default:
+  image: "{{ matrix_synapse_admin_docker_image }}"
+  boottime: 2
+  replicas: 1
+  podLabels: {}
+  ports:
+    - name: http
+      port: 80
+  resources:
+    limits:
+      cpu: "150m"
+      memory: "128Mi"
+    requests:
+      cpu: "50m"
+      memory: "48Mi"      
+  files:
+    config: []
+      # - id: nginx.conf
+      #   src: client-element/nginx.conf
+      #   dest: "/etc/nginx/nginx.conf"
+    secret: []
+      # - id: nginx.conf
+      #   src: client-element/nginx.conf
+      #   dest: "/etc/nginx/nginx.conf"

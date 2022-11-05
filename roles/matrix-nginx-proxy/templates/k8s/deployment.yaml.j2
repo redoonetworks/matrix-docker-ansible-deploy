@@ -1,27 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-nginx-proxy
+  name: {{ matrix_k8s_resource_prefix }}-nginx-proxy
   labels:
     role: matrix-nginx-proxy
-{{ include "deployment.selector" . | indent 4 }}
+    {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
 spec:
   selector:
     matchLabels:
       role: matrix-nginx-proxy
-{{ include "deployment.selector" . | indent 6 }}      
+      {{ matrix_k8s_selector|to_nice_yaml(indent=6)|trim|indent(6) }}
   strategy:
     type: RollingUpdate
   replicas: 1
   template:
     metadata:
+      annotations: 
+        checksum/matrix-conf: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ role_name }}/configmap.yaml") . | sha256sum }}
       labels:
         role: matrix-nginx-proxy
-{{ include "deployment.selector" . | indent 8 }}
+        {{ matrix_k8s_selector|to_nice_yaml(indent=8)|trim|indent(8) }}
     spec:
       containers:
-      - image: {{ .Values.Vars.matrix_nginx_proxy_docker_image }}
-        name: {{ .Release.Name }}-nginx-proxy
+      - image: {{ matrix_nginx_proxy_docker_image }}
+        name: {{ matrix_k8s_resource_prefix }}-nginx-proxy
 
         resources:
           limits:
@@ -52,7 +54,7 @@ spec:
       volumes:
         - name: "nginx-confd"
           configMap:
-            name: "{{ .Release.Name }}-nginx-proxy-confd"          
+            name: "{{ matrix_k8s_resource_prefix }}-nginx-proxy-confd"          
         - name: "nginx-conf"
           configMap:
-            name: "{{ .Release.Name }}-nginx-proxy-conf"          
+            name: "{{ matrix_k8s_resource_prefix }}-nginx-proxy-conf"          

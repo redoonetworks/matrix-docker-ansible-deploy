@@ -1,9 +1,0 @@
----
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: {{ .Values.namespace.name }}
-  labels:
-{{- if .Values.namespace.labels }}
-    {{ toYaml .Values.namespace.labels | nindent 8 }}
-{{- end }}
