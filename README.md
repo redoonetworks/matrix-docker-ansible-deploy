@@ -23,6 +23,7 @@ The following roles are already compatible to this deployment:
 
 - matrix-bridge-hookshot
 - matrix-client-element
+- matrix-client-cinny
 - matrix-nginx-proxy
 - matrix-synapse
 - matrix-synapse-admin

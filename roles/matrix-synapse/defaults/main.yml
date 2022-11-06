@@ -938,7 +938,9 @@ matrix_synapse_k8s_configuration_default:
   image: "{{ matrix_synapse_docker_image }}"
   boottime: 5
   replicas: 1
-  podLabels: {}
+  defaultPodLabels:
+    homeserver: "true"
+  podLabels:
   configMapLabels: {}
   secretLabels: 
     app.kubernetes.io/component: signingkey-job

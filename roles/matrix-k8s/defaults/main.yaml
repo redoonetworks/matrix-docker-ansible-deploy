@@ -27,5 +27,9 @@ matrix_k8s_homeserver_additional_mounts: []
 matrix_k8s_podLabels: {}
 matrix_k8s_images: {}
 
+matrix_k8s_serviceaccount: "{{ matrix_k8s_resource_prefix }}-account"
+
 matrix_k8s_selector:
   chat: "{{ matrix_server_fqn_matrix }}"
+
+matrix_k8s_database_egress_network_policy: []
