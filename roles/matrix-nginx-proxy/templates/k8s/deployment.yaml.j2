@@ -21,6 +21,7 @@ spec:
         role: matrix-nginx-proxy
         {{ matrix_k8s_selector|to_nice_yaml(indent=8)|trim|indent(8) }}
     spec:
+      serviceAccountName: {{ matrix_k8s_serviceaccount }}
       containers:
       - image: {{ matrix_nginx_proxy_docker_image }}
         name: {{ matrix_k8s_resource_prefix }}-nginx-proxy
