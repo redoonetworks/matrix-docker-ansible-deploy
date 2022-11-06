@@ -660,3 +660,6 @@ matrix_nginx_proxy_synapse_cache_proxy_cache_valid_time: "24h"
 # http://nginx.org/en/docs/ngx_core_module.html#worker_connections
 matrix_nginx_proxy_worker_processes: auto
 matrix_nginx_proxy_worker_connections: 1024
+
+matrix_k8s_hostnames: ['{{ matrix_server_fqn_matrix }}', '{{ matrix_domain }}']
+  
