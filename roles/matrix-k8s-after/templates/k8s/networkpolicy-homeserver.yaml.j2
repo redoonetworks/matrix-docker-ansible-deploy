@@ -1,0 +1,50 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-homeserver
+spec:
+  podSelector:
+    matchLabels:  
+      homeserver: "true"
+      {{ matrix_k8s_selector|to_nice_yaml(indent=6)|trim|indent(6) }}
+
+  policyTypes:
+    - Ingress
+    - Egress
+    
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:  
+          communicate-homeserver: "true"
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
+
+    - podSelector:
+        matchLabels:  
+          role: "matrix-nginx-proxy"
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
+
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 10.0.0.0/8
+        - 192.168.0.0/16
+        - 172.16.0.0/20
+        
+{% if matrix_k8s_database_egress_network_policy is defined and matrix_k8s_database_egress_network_policy|length > 0 %}
+  - to:
+    {{ matrix_k8s_database_egress_network_policy|to_nice_yaml(indent=4)|trim|indent(4) }}
+{% endif %}
+
+  ingress:    
+  - from:
+    - podSelector:
+        matchLabels:  
+          role: matrix-nginx-proxy
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
+
+    - podSelector:
+        matchLabels:  
+          role: matrix-corporal
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
