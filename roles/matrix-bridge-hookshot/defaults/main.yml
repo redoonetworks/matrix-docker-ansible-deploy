@@ -266,6 +266,8 @@ matrix_hookshot_k8s_configuration_default:
   image: "{{ matrix_hookshot_docker_image }}"
   boottime: 10
   replicas: 1
+  defaultPodLabels:
+    communicate-homeserver: "true"
   podLabels: {}
   service:
     name: 'matrix-hookshot'
