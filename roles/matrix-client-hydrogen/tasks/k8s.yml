@@ -1,6 +1,4 @@
 ---
-- ansible.builtin.fail:
-    msg: "Hydrogen Client currently not possible in Kubernetes Hosting"
 
 - name: Ensure helm templates folder exists
   ansible.builtin.file:

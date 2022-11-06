@@ -1,4 +1,8 @@
 ---
+- name: Check if Hydrogon Client is enabled in Kubernetes mode
+  ansible.builtin.fail:
+    msg: "Hydrogen Client currently not possible in Kubernetes Hosting"
+  when: matrix_client_hydrogen_enabled | bool and matrix_k8s_mode | bool
 
 - name: check K8s mode
   ansible.builtin.debug:
