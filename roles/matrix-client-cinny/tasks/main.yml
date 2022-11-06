@@ -16,6 +16,13 @@
     - setup-all
     - setup-client-cinny
 
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/k8s.yml"
+  when: run_setup | bool and matrix_client_cinny_enabled | bool and matrix_k8s_mode | bool
+  tags:
+    - setup-all
+    - setup-client-cinny
+    - setup-k8s
+
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check.yml"
   delegate_to: 127.0.0.1
   become: false
