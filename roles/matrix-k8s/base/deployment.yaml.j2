@@ -26,10 +26,14 @@ spec:
       labels:
         role: {{ role_name }}
         {{ matrix_k8s_selector|to_nice_yaml(indent=8)|trim|indent(8) }}
+{% if matrix_k8s_configuration.defaultPodLabels is defined and matrix_k8s_configuration.defaultPodLabels|length > 0 %}
+        {{ matrix_k8s_configuration.defaultPodLabels|to_nice_yaml(indent=8)|trim|indent(8) }}
+{% endif %}
 {% if matrix_k8s_configuration.podLabels is defined and matrix_k8s_configuration.podLabels|length > 0 %}
         {{ matrix_k8s_configuration.podLabels|to_nice_yaml(indent=8)|trim|indent(8) }}
 {% endif %}
     spec:
+      serviceAccountName: {{ matrix_k8s_serviceaccount }}
       containers:
       - image: {{ matrix_k8s_configuration.image | quote }}
         name: {{ matrix_k8s_resource_prefix }}-{{ resourceName }}
