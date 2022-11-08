@@ -4,12 +4,12 @@ kind: Deployment
 metadata:
   name: {{ matrix_k8s_resource_prefix }}-{{ resourceName }}
   labels:
-    role: {{ role_name }}
+    role: {{ normalizedRoleName }}
     {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
 spec:
   selector:
     matchLabels:
-      role: {{ role_name }}
+      role: {{ normalizedRoleName }}
       {{ matrix_k8s_selector|to_nice_yaml(indent=6)|trim|indent(6) }}
   strategy:
     type: RollingUpdate
@@ -18,13 +18,13 @@ spec:
     metadata:
       annotations: 
 {% if matrix_k8s_configuration.files.config is defined and matrix_k8s_configuration.files.config|length > 0 %}      
-        checksum/config: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ role_name }}/configmap.yaml") . | sha256sum }}
+        checksum/config: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/configmap.yaml") . | sha256sum }}
 {% endif %}
 {% if matrix_k8s_configuration.files.secret is defined and matrix_k8s_configuration.files.secret|length > 0 %}      
-        checksum/secret: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ role_name }}/secret.yaml") . | sha256sum }}
+        checksum/secret: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/secret.yaml") . | sha256sum }}
 {% endif %}
       labels:
-        role: {{ role_name }}
+        role: {{ normalizedRoleName }}
         {{ matrix_k8s_selector|to_nice_yaml(indent=8)|trim|indent(8) }}
 {% if matrix_k8s_configuration.defaultPodLabels is defined and matrix_k8s_configuration.defaultPodLabels|length > 0 %}
         {{ matrix_k8s_configuration.defaultPodLabels|to_nice_yaml(indent=8)|trim|indent(8) }}

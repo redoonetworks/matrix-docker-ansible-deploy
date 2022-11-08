@@ -3,12 +3,12 @@ apiVersion: v1
 kind: Service
 metadata:
 {% if not matrix_k8s_configuration.service.name is defined %}
-  name: {{ matrix_k8s_resource_prefix }}-{{ role_name }}
+  name: {{ matrix_k8s_resource_prefix }}-{{ normalizedRoleName }}
 {% else %}
   name: {{ matrix_k8s_resource_prefix }}-{{ matrix_k8s_configuration.service.name }}
 {% endif %}
   labels:
-    role: {{ role_name }}
+    role: {{ normalizedRoleName }}
     {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
 spec:
   ports:
@@ -18,5 +18,5 @@ spec:
 {% endfor %}
   clusterIP: None
   selector:
-    role: {{ role_name }}
+    role: {{ normalizedRoleName }}
     {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}

@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: {{ matrix_k8s_resource_prefix}}-matrix-nginx-proxy
   labels:
-    role: {{ role_name }}
+    role: {{ normalizedRoleName }}
     {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
 spec:
   ports:
@@ -14,7 +14,7 @@ spec:
     name: http-synapse
   clusterIP: None
   selector:
-    role: {{ role_name }}
+    role: {{ normalizedRoleName }}
     {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
 ---
 apiVersion: v1
@@ -22,7 +22,7 @@ kind: Service
 metadata:
   name: {{ matrix_k8s_resource_prefix }}-matrix-synapse-federation
   labels:
-    role: {{ role_name }}
+    role: {{ normalizedRoleName }}
     {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
 spec:
   ports:
@@ -30,6 +30,6 @@ spec:
     name: http
   clusterIP: None
   selector:
-    role: {{ role_name }}
+    role: {{ normalizedRoleName }}
     {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
 

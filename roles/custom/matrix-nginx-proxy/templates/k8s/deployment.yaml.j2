@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/matrix-conf: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ role_name }}/configmap.yaml") . | sha256sum }}
+        checksum/matrix-conf: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/configmap.yaml") . | sha256sum }}
       labels:
         role: matrix-nginx-proxy
         {{ matrix_k8s_selector|to_nice_yaml(indent=8)|trim|indent(8) }}
