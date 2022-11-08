@@ -1,12 +1,4 @@
 ---
-- name: Ensure helm templates folder exists
-  ansible.builtin.file:
-    path: "{{ matrix_helm_data_path }}/templates/{{ role_name }}"
-    state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
 - ansible.builtin.set_fact:
     matrix_nginx_proxy_k8s_svc_replacements: "{{ matrix_nginx_proxy_k8s_svc_replacements + ['matrix-hookshot'] }}"
 
@@ -15,38 +7,7 @@
 
     matrix_k8s_configuration: "{{ matrix_hookshot_k8s_configuration_default|combine(matrix_hookshot_k8s_configuration_custom, recursive=true) }}"
 
-    resourceName: "{{ role_name|replace('matrix-','') }}"
-
-  
-- name: Find all conf.d files inside confd directory
-  find:
-    paths: "{{ role_path }}/templates/k8s/"
-    patterns: "*.yaml"
-  register: k8s_helm_template_files
-
-- name: copy helm templates
-  ansible.builtin.copy:
-    src: "{{ item.path }}"
-    dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-    mode: 0660
-  with_items: "{{ k8s_helm_template_files.files }}"
-
-- name: Find all jinja2 files inside templates directory
-  find:
-    paths: "{{ role_path }}/templates/k8s/"
-    patterns: "*.j2"
-  register: k8s_helm_template_files
-
-- name: copy helm templates
-  ansible.builtin.template:
-    src: "{{ item.path }}"
-    dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/{{ item.path|basename|replace('.j2', '') }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-    mode: 0660
-  with_items: "{{ k8s_helm_template_files.files }}"
+- ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/copy-yaml-files.yml"
 
     
     
