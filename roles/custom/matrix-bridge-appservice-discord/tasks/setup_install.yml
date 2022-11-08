@@ -103,6 +103,7 @@
   changed_when: false
 
 - name: Ensure matrix-appservice-discord.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-discord.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-discord.service"

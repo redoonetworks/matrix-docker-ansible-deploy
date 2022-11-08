@@ -81,6 +81,7 @@
   when: "matrix_bot_postmoogle_container_image_self_build | bool"
 
 - name: Ensure matrix-bot-postmoogle.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-postmoogle.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-postmoogle.service"

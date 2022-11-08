@@ -47,6 +47,7 @@
   when: matrix_sms_bridge_provider_android_truststore_local_path != ""
 
 - name: Ensure matrix-sms-bridge.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-sms-bridge.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sms-bridge.service"

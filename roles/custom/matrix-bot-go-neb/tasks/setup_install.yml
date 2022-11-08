@@ -36,12 +36,12 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-bot-go-neb.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-go-neb.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-go-neb.service"
     mode: 0644
   register: matrix_bot_go_neb_systemd_service_result
-  when: "matrix_systemd_enable | bool"
 
 - name: Ensure systemd reloaded after matrix-bot-go-neb.service installation
   ansible.builtin.service:

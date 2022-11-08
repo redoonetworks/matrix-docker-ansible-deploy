@@ -110,7 +110,7 @@
   when: matrix_hookshot_github_enabled | bool and matrix_hookshot_github_private_key|length > 0
 
 - name: Ensure matrix-hookshot.service installed
-  when: not matrix_k8s_mode | bool 
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-hookshot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-hookshot.service"

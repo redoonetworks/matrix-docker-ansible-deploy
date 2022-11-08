@@ -106,6 +106,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-appservice-kakaotalk-node.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-kakaotalk-node.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-kakaotalk-node.service"
@@ -113,6 +114,7 @@
   register: matrix_appservice_kakaotalk_node_systemd_service_result
 
 - name: Ensure matrix-appservice-kakaotalk.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-kakaotalk.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-kakaotalk.service"

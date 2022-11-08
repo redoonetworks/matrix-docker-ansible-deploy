@@ -57,6 +57,7 @@
   when: "matrix_email2matrix_container_image_self_build | bool"
 
 - name: Ensure matrix-email2matrix.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-email2matrix.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-email2matrix.service"

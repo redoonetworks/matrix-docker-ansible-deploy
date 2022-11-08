@@ -75,12 +75,12 @@
   when: "not matrix_k8s_mode | bool"
 
 - name: Ensure matrix-coturn.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-coturn.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-coturn.service"
     mode: 0644
   register: matrix_coturn_systemd_service_change_results
-  when: "matrix_systemd_enable | bool"
 
 # This may be unnecessary when more long-lived certificates are used.
 # We optimize for the common use-case though (short-lived Let's Encrypt certificates).

@@ -86,6 +86,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-bot-matrix-reminder-bot.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-matrix-reminder-bot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-matrix-reminder-bot.service"
