@@ -12,6 +12,8 @@ spec:
     name: http
   - port: 12080
     name: http-synapse
+  - port: 12088
+    name: http-federation
   clusterIP: None
   selector:
     role: {{ normalizedRoleName }}
