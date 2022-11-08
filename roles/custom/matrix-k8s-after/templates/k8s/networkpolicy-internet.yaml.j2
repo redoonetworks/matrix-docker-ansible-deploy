@@ -1,0 +1,21 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-internet
+spec:
+  podSelector:
+    matchLabels:  
+      internet: "true"
+      {{ matrix_k8s_selector|to_nice_yaml(indent=6)|trim|indent(6) }}
+
+  policyTypes:
+    - Egress
+    
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 10.0.0.0/8
+        - 192.168.0.0/16
+        - 172.16.0.0/20

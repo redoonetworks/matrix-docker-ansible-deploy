@@ -23,14 +23,6 @@ spec:
         matchLabels:  
           role: "matrix-nginx-proxy"
           {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
-
-  - to:
-    - ipBlock:
-        cidr: 0.0.0.0/0
-        except:
-        - 10.0.0.0/8
-        - 192.168.0.0/16
-        - 172.16.0.0/20
         
 {% if matrix_k8s_database_egress_network_policy is defined and matrix_k8s_database_egress_network_policy|length > 0 %}
   - to:
