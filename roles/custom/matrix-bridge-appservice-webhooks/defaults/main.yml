@@ -95,6 +95,7 @@ matrix_appservice_webhooks_k8s_configuration_default:
   replicas: 1
   defaultPodLabels:
     communicate-homeserver: "true"
+    database: "true"
   podLabels: {}
   deployment:
     command: ["node"]

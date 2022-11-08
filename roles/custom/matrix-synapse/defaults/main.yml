@@ -940,6 +940,8 @@ matrix_synapse_k8s_configuration_default:
   replicas: 1
   defaultPodLabels:
     homeserver: "true"
+    internet: "true"
+    database: "true"
   podLabels:
   configMapLabels: {}
   secretLabels: 
