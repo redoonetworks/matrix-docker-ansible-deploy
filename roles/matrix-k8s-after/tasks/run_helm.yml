@@ -1,6 +1,0 @@
----
-
-- name: Render helm chart
-  kubernetes.core.helm_template:
-    chart_ref: "{{ matrix_helm_data_path }}"
-    output_dir: "{{ matrix_base_data_path }}/helm/yamls"

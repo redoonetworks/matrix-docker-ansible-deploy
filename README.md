@@ -1,7 +1,12 @@
 [![Support room on Matrix](https://img.shields.io/matrix/matrix-docker-ansible-deploy:devture.com.svg?label=%23matrix-docker-ansible-deploy%3Adevture.com&logo=matrix&style=for-the-badge&server_fqdn=matrix.devture.com)](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) [![donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/s.pantaleev/donate)
 
-# Matrix (An open network for secure, decentralized communication) server setup using Ansible and Docker
+# Matrix (An open network for secure, decentralized communication) server setup using Ansible and Kubernetes
 
+**[This is a fork of the original repository](https://github.com/spantaleev/matrix-docker-ansible-deploy) , which makes same work, but with docker based hosting. Configuration and result will be compatible as long as the role is needed and supported.**
+
+## Why another repository?
+
+Generally, because the target of this repository is a little different, then the one from spantaleev. He decided to focus on docker. Especially because of the amount of knowledge he collect within that repository, it will be a waste of time to recreate everything again. So the plan was born to maintain another repository, which setup same roles, but for kubernetes.
 ## Purpose
 
 This [Ansible](https://www.ansible.com/) playbook is meant to help you run your own [Matrix](http://matrix.org/) homeserver, along with the [various services](#supported-services) related to that.
@@ -12,6 +17,19 @@ We run all services in [Docker](https://www.docker.com/) containers (see [the co
 
 [Installation](docs/README.md) (upgrades) and some maintenance tasks are automated using [Ansible](https://www.ansible.com/) (see [our Ansible guide](docs/ansible.md)).
 
+## Kubernetes compatibility
+
+The following roles are already compatible to this deployment:
+
+- matrix-bridge-hookshot
+- matrix-client-element
+- matrix-client-cinny
+- matrix-nginx-proxy
+- matrix-synapse
+- matrix-synapse-admin
+
+## How it works?
+Ansible will generate a helm chart within the target /matrix folder, which then is applied to the cluster. I decided to use this way, because this allows to use a perfect combination of both worlds. Some topics are harder in ansible, then in helm charts, like including configuration files in ConfigMaps.
 
 ## Supported services
 

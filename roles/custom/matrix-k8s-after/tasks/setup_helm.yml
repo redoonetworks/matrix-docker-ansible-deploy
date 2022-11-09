@@ -1,0 +1,66 @@
+---
+- name: Ensure helm templates subpath path exists
+  ansible.builtin.file:
+    path: "{{ matrix_helm_data_path }}/templates"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Start creating K8s Helm Chart
+  ansible.builtin.copy:
+    src: "{{ role_path }}/templates/Chart.yaml"
+    dest: "{{ matrix_helm_data_path }}/Chart.yaml"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: '0660'
+  when: matrix_k8s_mode | bool
+
+- name: Start creating K8s Helm Chart
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/values.yaml.j2"
+    dest: "{{ matrix_helm_data_path }}/values.yaml"
+    mode: 0644
+- name: Start creating K8s Helm Chart
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/_helpers.tpl.j2"
+    dest: "{{ matrix_helm_data_path }}/templates/_helpers.tpl"
+    mode: 0644
+
+- name: Ensure base helm templates folder exists
+  ansible.builtin.file:
+    path: "{{ matrix_helm_data_path }}/templates/{{ role_name }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Find all conf.d files inside confd directory
+  find:
+    paths: "{{ role_path }}/templates/k8s/"
+    patterns: "*.yaml"
+  register: k8s_helm_template_files
+
+- name: copy helm templates
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0660
+  with_items: "{{ k8s_helm_template_files.files }}"
+
+- name: Find all jinja2 files inside templates directory
+  find:
+    paths: "{{ role_path }}/templates/k8s/"
+    patterns: "*.j2"
+  register: k8s_helm_template_files
+
+- name: copy helm templates
+  ansible.builtin.template:
+    src: "{{ item.path }}"
+    dest: "{{ matrix_helm_data_path }}/templates/{{ role_name }}/{{ item.path|basename|replace('.j2', '') }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0660
+  with_items: "{{ k8s_helm_template_files.files }}"

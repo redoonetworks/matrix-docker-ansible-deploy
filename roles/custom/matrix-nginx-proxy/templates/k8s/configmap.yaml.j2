@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-nginx-proxy-confd
+data:
+{% raw %}{{{% endraw %} (.Files.Glob "nginx-proxy/conf.d/*.conf").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-nginx-proxy-conf
+data:
+  nginx.conf: |-
+{% raw %}{{{% endraw %} .Files.Get "nginx-proxy/nginx.conf" | indent 4 }}
