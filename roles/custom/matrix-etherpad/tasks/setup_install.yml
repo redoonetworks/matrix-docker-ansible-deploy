@@ -30,6 +30,7 @@
   until: result is not failed
 
 - name: Ensure matrix-etherpad.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-etherpad.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-etherpad.service"

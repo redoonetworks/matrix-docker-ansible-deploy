@@ -1,0 +1,8 @@
+---
+- ansible.builtin.set_fact:
+    matrix_nginx_proxy_k8s_svc_replacements: "{{ matrix_nginx_proxy_k8s_svc_replacements + ['matrix-etherpad'] }}"
+    matrix_k8s_hostnames: "{{ matrix_k8s_hostnames + ['{{ matrix_server_fqn_etherpad }}'] }}"
+    
+    matrix_k8s_configuration: "{{ matrix_etherpad_k8s_configuration_default|combine(matrix_etherpad_k8s_configuration_custom, recursive=true) }}"
+    
+- ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/copy-yaml-files.yml"

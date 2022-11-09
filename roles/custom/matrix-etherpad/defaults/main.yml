@@ -9,7 +9,7 @@ matrix_etherpad_mode: standalone
 
 matrix_etherpad_base_path: "{{ matrix_base_data_path }}/etherpad"
 
-matrix_etherpad_version: 1.8.18
+matrix_etherpad_version: 1.8.14
 matrix_etherpad_docker_image: "{{ matrix_container_global_registry_prefix }}etherpad/etherpad:{{ matrix_etherpad_version }}"
 matrix_etherpad_docker_image_force_pull: "{{ matrix_etherpad_docker_image.endswith(':latest') }}"
 
@@ -100,3 +100,36 @@ matrix_etherpad_configuration_extension: "{{ matrix_etherpad_configuration_exten
 # Holds the final Etherpad configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_etherpad_configuration_json`.
 matrix_etherpad_configuration: "{{ matrix_etherpad_configuration_default | combine(matrix_etherpad_configuration_extension, recursive=True) }}"
+
+matrix_etherpad_k8s_configuration_custom: {}
+matrix_etherpad_k8s_configuration_default:
+  image: "{{ matrix_etherpad_docker_image }}"
+  boottime: 10
+  replicas: 1
+  defaultPodLabels:
+    communicate-homeserver: "true"
+    database: "true"
+    internet: "true"
+  podLabels: {}
+  deployment:
+    command: ["node"]
+    args: ["--experimental-worker","src/node/server.js","--settings","/data/settings.json"] # ,"--credentials","/data/credentials.json","--sessionkey","/data/sessionkey.json","--apikey","/data/apijey.json"
+  ports:
+    - name: http
+      port: 9001
+  resources:
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+    requests:
+      cpu: "150m"
+      memory: "128Mi"      
+  files:
+    config:
+      - id: settings.json
+        src: etherpad/settings.json
+        dest: "/data/settings.json"
+    secret: []
+      # - id: nginx.conf
+      #   src: client-element/nginx.conf
+      #   dest: "/etc/nginx/nginx.conf"
