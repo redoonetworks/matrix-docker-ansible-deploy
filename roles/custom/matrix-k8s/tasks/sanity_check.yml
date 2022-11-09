@@ -4,6 +4,14 @@
     msg: "Hydrogen Client currently not possible in Kubernetes Hosting"
   when: matrix_client_hydrogen_enabled | bool and matrix_k8s_mode | bool
 
+- name: Check dimension database configuration
+  ansible.builtin.fail:
+    msg: "When using matrix-dimension, you must configure `matrix_dimension_database_engine` to 'postgres' and create own  `matrix_dimension_database_name`"
+  when: matrix_dimension_enabled | bool and matrix_dimension_database_engine == 'sqlite' and matrix_k8s_mode | bool
+
+- ansible.builtin.debug:
+    msg: "{{ matrix_dimension_database_engine }}"
+    
 - name: check K8s mode
   ansible.builtin.debug:
     msg: "Enable Kubernetes mode and disable Systemd and docker usage"
