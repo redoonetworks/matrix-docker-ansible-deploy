@@ -35,7 +35,7 @@
     matrix_synapse_ext_synapse_s3_storage_provider_enabled: true
 
     # Prepared Image for K8s with extendion files
-    matrix_synapse_docker_image: "ghcr.io/swarnat/matrix-synapse-k8s:v1.69.0"
+    matrix_synapse_docker_image: "ghcr.io/swarnat/matrix-synapse-k8s:v1.71.0"
 
     matrix_nginx_proxy_enabled: true
     matrix_nginx_proxy_https_enabled: false
