@@ -23,6 +23,9 @@ spec:
 {% if matrix_k8s_configuration.files.secret is defined and matrix_k8s_configuration.files.secret|length > 0 %}      
         checksum/secret: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/secret.yaml") . | sha256sum }}
 {% endif %}
+{% if matrix_k8s_configuration.secretENV is defined %}      
+        checksum/secret_env: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/secret-env.yaml") . | sha256sum }}
+{% endif %}
       labels:
         role: {{ normalizedRoleName }}
         {{ matrix_k8s_selector|to_nice_yaml(indent=8)|trim|indent(8) }}
@@ -37,7 +40,11 @@ spec:
       containers:
       - image: {{ matrix_k8s_configuration.image | quote }}
         name: {{ matrix_k8s_resource_prefix }}-{{ resourceName }}
-
+{% if matrix_k8s_configuration.secretENV is defined %}
+        envFrom:
+          - secretRef:
+              name: {{ matrix_k8s_resource_prefix }}-{{ resourceName }}-env
+{% endif %}
         resources:
           {{ matrix_k8s_configuration.resources|to_nice_yaml(indent=10)|trim|indent(10) }}
         readinessProbe:
