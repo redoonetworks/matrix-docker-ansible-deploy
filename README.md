@@ -21,12 +21,16 @@ We run all services in [Docker](https://www.docker.com/) containers (see [the co
 
 The following roles are already compatible to this deployment:
 
+- matrix-bot-buscarron
 - matrix-bridge-hookshot
 - matrix-client-element
 - matrix-client-cinny
+- matrix-dimension
+- matrix-etherpad
 - matrix-nginx-proxy
 - matrix-synapse
 - matrix-synapse-admin
+- matrix-user-creator
 
 ## How it works?
 Ansible will generate a helm chart within the target /matrix folder, which then is applied to the cluster. I decided to use this way, because this allows to use a perfect combination of both worlds. Some topics are harder in ansible, then in helm charts, like including configuration files in ConfigMaps.
