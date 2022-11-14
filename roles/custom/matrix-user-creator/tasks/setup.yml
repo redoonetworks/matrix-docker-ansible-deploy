@@ -22,7 +22,7 @@
 - name: Wait a while, so that the homeserver can manage to start before creating Matrix users
   ansible.builtin.pause:
     seconds: 7
-  when: matrix_user_registrator_homeserver_start_result.changed | bool
+  when: matrix_user_registrator_homeserver_start_result.changed | bool and not matrix_k8s_mode | bool
 
 - name: Ensure Matrix users are created
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_user_registered_{{ matrix_homeserver_implementation }}.yml"
@@ -31,3 +31,4 @@
     loop_var: user
   # Suppress logging to avoid dumping the credentials to the shell
   no_log: true
+  when: not matrix_k8s_mode | bool
