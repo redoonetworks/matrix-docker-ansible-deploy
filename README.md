@@ -22,6 +22,7 @@ We run all services in [Docker](https://www.docker.com/) containers (see [the co
 The following roles are already compatible to this deployment:
 
 - matrix-bot-buscarron
+- matrix-bot-honoroit
 - matrix-bridge-hookshot
 - matrix-client-element
 - matrix-client-cinny
