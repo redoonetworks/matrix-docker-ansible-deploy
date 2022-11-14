@@ -1,0 +1,9 @@
+---
+- ansible.builtin.set_fact:
+    matrix_k8s_rolename: "{{ role_name|replace('custom/','')|replace('-','_') }}"
+     
+    
+- ansible.builtin.set_fact:
+    matrix_k8s_configuration: "{{ lookup('vars', matrix_k8s_rolename ~ '_k8s_configuration_default')|combine(lookup('vars', matrix_k8s_rolename ~ '_k8s_configuration_custom'), recursive=true) }}"
+    
+- ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/copy-yaml-files.yml"
