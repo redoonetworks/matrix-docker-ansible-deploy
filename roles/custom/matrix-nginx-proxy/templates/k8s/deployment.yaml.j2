@@ -43,6 +43,8 @@ spec:
         volumeMounts:
         - name: "nginx-confd"
           mountPath: "/etc/nginx/conf.d/"
+        - name: "nginx-wellknown"
+          mountPath: "/matrix/static-files/.well-known/matrix/"
         - name: "nginx-conf"
           mountPath: "/etc/nginx/nginx.conf"
           subPath: "nginx.conf"
@@ -56,6 +58,9 @@ spec:
         - name: "nginx-confd"
           configMap:
             name: "{{ matrix_k8s_resource_prefix }}-nginx-proxy-confd"          
+        - name: "nginx-wellknown"
+          configMap:
+            name: "{{ matrix_k8s_resource_prefix }}-nginx-proxy-wellknown"          
         - name: "nginx-conf"
           configMap:
             name: "{{ matrix_k8s_resource_prefix }}-nginx-proxy-conf"          

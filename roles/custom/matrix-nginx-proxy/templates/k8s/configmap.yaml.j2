@@ -9,6 +9,13 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: {{ matrix_k8s_resource_prefix }}-nginx-proxy-wellknown
+data:
+{% raw %}{{{% endraw %} (.Files.Glob "static-files/.well-known/matrix/*").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: {{ matrix_k8s_resource_prefix }}-nginx-proxy-conf
 data:
   nginx.conf: |-
