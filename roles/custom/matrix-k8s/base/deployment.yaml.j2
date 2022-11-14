@@ -47,11 +47,13 @@ spec:
 {% endif %}
         resources:
           {{ matrix_k8s_configuration.resources|to_nice_yaml(indent=10)|trim|indent(10) }}
+{% if matrix_k8s_configuration.ports is defined and matrix_k8s_configuration.ports|length > 0 %}          
         readinessProbe:
           tcpSocket:
             port: {{ matrix_k8s_configuration.ports[0].port }}
           initialDelaySeconds: {{ matrix_k8s_configuration.boottime }}
           periodSeconds: 5
+{% endif %}          
         imagePullPolicy: Always
 {% if matrix_k8s_configuration.deployment.command is defined %}
         command: {{ matrix_k8s_configuration.deployment.command | to_json  }}
