@@ -8,6 +8,3 @@
     matrix_k8s_configuration: "{{ matrix_hookshot_k8s_configuration_default|combine(matrix_hookshot_k8s_configuration_custom, recursive=true) }}"
 
 - ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/copy-yaml-files.yml"
-
-    
-    

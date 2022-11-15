@@ -11,7 +11,7 @@
 
 - ansible.builtin.debug:
     msg: "{{ matrix_dimension_database_engine }}"
-    
+
 - name: check K8s mode
   ansible.builtin.debug:
     msg: "Enable Kubernetes mode and disable Systemd and docker usage"

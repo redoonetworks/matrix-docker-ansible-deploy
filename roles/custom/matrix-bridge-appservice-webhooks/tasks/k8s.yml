@@ -2,8 +2,8 @@
 - ansible.builtin.set_fact:
     matrix_nginx_proxy_k8s_svc_replacements: "{{ matrix_nginx_proxy_k8s_svc_replacements + ['matrix-appservice-webhooks'] }}"
     matrix_appservice_webhooks_appservice_url: "http://{{ matrix_k8s_resource_prefix }}-matrix-appservice-webhooks.{{ matrix_k8s_namespace }}.svc.cluster.local"
-    
-    matrix_k8s_homeserver_additional_mounts: "{{ matrix_k8s_homeserver_additional_mounts + [{'id': 'matrix-appservice-webhooks-registration.yaml', 'src': 'appservice-webhooks/config/webhooks-registration.yaml', 'dest': '/matrix-appservice-webhooks-registration.yaml' }] }}"    
+
+    matrix_k8s_homeserver_additional_mounts: "{{ matrix_k8s_homeserver_additional_mounts + [{'id': 'matrix-appservice-webhooks-registration.yaml', 'src': 'appservice-webhooks/config/webhooks-registration.yaml', 'dest': '/matrix-appservice-webhooks-registration.yaml' }] }}"
 
     matrix_appservice_webhooks_database_driver: 'postgres'
 

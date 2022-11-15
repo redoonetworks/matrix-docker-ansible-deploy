@@ -2,7 +2,7 @@
 - ansible.builtin.set_fact:
     matrix_nginx_proxy_k8s_svc_replacements: "{{ matrix_nginx_proxy_k8s_svc_replacements + ['matrix-client-cinny'] }}"
     matrix_k8s_hostnames: "{{ matrix_k8s_hostnames + ['{{ matrix_server_fqn_cinny }}'] }}"
-    
+
     matrix_k8s_configuration: "{{ matrix_client_cinny_k8s_configuration_default|combine(matrix_client_cinny_k8s_configuration_custom, recursive=true) }}"
-    
+
 - ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/copy-yaml-files.yml"
