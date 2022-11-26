@@ -24,3 +24,13 @@
     - {'old': 'matrix_container_retries_delay', 'new': 'devture_playbook_help_container_retries_delay'}
     - {'old': 'matrix_geturl_retries_count', 'new': 'devture_playbook_help_geturl_retries_count'}
     - {'old': 'matrix_geturl_retries_delay', 'new': 'devture_playbook_help_geturl_retries_delay'}
+
+    - {'old': 'matrix_nginx_proxy_synapse_cache_path', 'new': 'matrix_synapse_reverse_proxy_companion_synapse_cache_path'}
+    - {'old': 'matrix_nginx_proxy_synapse_cache_enabled', 'new': 'matrix_synapse_reverse_proxy_companion_synapse_cache_enabled'}
+
+    - {'old': 'matrix_docker_installation_enabled', 'new': 'matrix_playbook_docker_installation_enabled'}
+    - {'old': 'matrix_docker_package_name', 'new': '<Not applicable. Docker is installed using https://github.com/geerlingguy/ansible-role-docker now>'}
+
+    - {'old': 'matrix_systemd_services_list', 'new': 'devture_systemd_service_manager_services_list_additional'}
+    - {'old': 'matrix_common_after_systemd_service_start_wait_for_timeout_seconds', 'new': 'devture_systemd_service_manager_up_verification_delay_seconds'}
+    - {'old': 'matrix_systemd_services_autostart_enabled', 'new': 'devture_systemd_service_manager_services_autostart_enabled'}
