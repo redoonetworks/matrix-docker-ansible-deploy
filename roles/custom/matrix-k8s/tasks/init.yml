@@ -60,4 +60,7 @@
     matrix_synapse_tls_federation_listener_enabled: false    
 
     matrix_nginx_proxy_base_domain_serving_enabled: true
+
+    matrix_k8s_hostnames: ['{{ matrix_server_fqn_matrix }}', '{{ matrix_domain }}']
+    
   when: matrix_k8s_mode | bool
