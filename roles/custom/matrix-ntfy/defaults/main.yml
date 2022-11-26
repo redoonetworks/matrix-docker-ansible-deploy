@@ -46,3 +46,31 @@ matrix_ntfy_configuration_extension: "{{ matrix_ntfy_configuration_extension_yam
 # Holds the final ntfy configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_ntfy_configuration_yaml`.
 matrix_ntfy_configuration: "{{ matrix_ntfy_configuration_yaml | from_yaml | combine(matrix_ntfy_configuration_extension, recursive=True) }}"
+
+matrix_ntfy_k8s_configuration_custom: {}
+matrix_ntfy_k8s_configuration_default:
+  image: "{{ matrix_ntfy_docker_image }}"
+  boottime: 10
+  replicas: 1
+  podLabels: {}
+  deployment:
+    command: ["serve"]
+  ports:
+    - name: http
+      port: 8080
+  resources:
+    limits:
+      cpu: "150m"
+      memory: "128Mi"
+    requests:
+      cpu: "50m"
+      memory: "64Mi"      
+  files:
+    config:
+      - id: server.yml
+        src: ntfy/server.yml
+        dest: "/etc/ntfy/server.json"
+    secret: []
+      # - id: nginx.conf
+      #   src: client-element/nginx.conf
+      #   dest: "/etc/nginx/nginx.conf"
