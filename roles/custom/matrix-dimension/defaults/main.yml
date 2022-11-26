@@ -104,6 +104,8 @@ matrix_dimension_k8s_configuration_default:
   image: "{{ matrix_dimension_docker_image }}"
   boottime: 10
   replicas: 1
+  passwordVariables:
+    - variable: "matrix_dimension_database_connection_string"
   defaultPodLabels:
     communicate-homeserver: "true"
     internet: "true"

@@ -2,6 +2,9 @@
 - ansible.builtin.set_fact:
     resourceName: "{{ role_name|replace('custom/','')|replace('matrix-','') }}"
     normalizedRoleName: "{{ role_name|replace('custom/','') }}"
+    secret_passwords: []
+
+- ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/replace-passwords.yml"
 
 - name: Ensure helm templates folder exists
   ansible.builtin.file:

@@ -106,6 +106,8 @@ matrix_etherpad_k8s_configuration_default:
   image: "{{ matrix_etherpad_docker_image }}"
   boottime: 10
   replicas: 1
+  passwordVariables:
+    - variable: "matrix_etherpad_database_password"
   defaultPodLabels:
     communicate-homeserver: "true"
     database: "true"
