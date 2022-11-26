@@ -1,0 +1,22 @@
+{% if (matrix_k8s_configuration.files.config is defined and matrix_k8s_configuration.files.config|length > 0) or 
+      (matrix_k8s_configuration.files.secret is defined and matrix_k8s_configuration.files.secret|length > 0) %}
+        volumeMounts:
+{% if useDataRaw %}        
+        - mountPath: /data
+          name: config-volume       
+{% endif %}
+{% for line in matrix_k8s_configuration.files.config %}
+{% if not useDataRaw or "/data/" not in line.dest %}
+        - name: "config"
+          mountPath: "{{ line.dest }}"
+          subPath: "{{ line.id }}"
+{% endif %}
+{% endfor %}
+{% for line in matrix_k8s_configuration.files.secret %}
+{% if not useDataRaw or "/data/" not in line.dest %}
+        - name: "secret"
+          mountPath: "{{ line.dest }}"
+          subPath: "{{ line.id }}"
+{% endif %}          
+{% endfor %}           
+{% endif %}
