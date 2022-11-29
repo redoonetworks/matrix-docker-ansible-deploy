@@ -61,8 +61,12 @@ matrix_ntfy_k8s_configuration_default:
   boottime: 10
   replicas: 1
   podLabels: {}
+  environment:
+    - name: "NTFY_VISITOR_REQUEST_LIMIT_EXEMPT_HOSTS"
+      value: "{{matrix_server_fqn_matrix}},localhost,10.0.0.0/8"
   deployment:
-    command: ["serve"]
+    command: ["ntfy"]
+    args: ["serve"]
   ports:
     - name: http
       port: 8080
@@ -74,10 +78,12 @@ matrix_ntfy_k8s_configuration_default:
       cpu: "50m"
       memory: "64Mi"      
   files:
+    emptyDirs:
+      - /data
     config:
       - id: server.yml
-        src: ntfy/server.yml
-        dest: "/etc/ntfy/server.json"
+        src: ntfy/config/server.yml
+        dest: "/etc/ntfy/server.yml"
     secret: []
       # - id: nginx.conf
       #   src: client-element/nginx.conf
