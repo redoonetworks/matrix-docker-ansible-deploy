@@ -27,6 +27,11 @@
 
     # We use a precreated docker image, which have extensions built in
     matrix_synapse_container_image_customizations_enabled: false
+    
+    # We need external mailserver
+    matrix_mailer_enabled: false
+    matrix_coturn_enabled: false
+
 
     # Disable borg backup in deployments
     matrix_backup_borg_enabled: false
@@ -40,15 +45,19 @@
     matrix_nginx_proxy_enabled: true
     matrix_nginx_proxy_https_enabled: false
     matrix_nginx_proxy_http_level_resolver: "{{ matrix_nginx_proxy_k8s_coredns_ip }}"
+    matrix_synapse_reverse_proxy_companion_http_level_resolver: "{{ matrix_nginx_proxy_k8s_coredns_ip }}"
 
     matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "{{ matrix_k8s_resource_prefix }}-matrix-synapse.{{ matrix_k8s_namespace }}.svc.cluster.local:{{ matrix_synapse_container_federation_api_plain_port }}"
+    matrix_synapse_reverse_proxy_companion_federation_api_addr: "{{ matrix_k8s_resource_prefix }}-matrix-synapse.{{ matrix_k8s_namespace }}.svc.cluster.local:{{ matrix_synapse_container_federation_api_plain_port }}"
+
     matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: "{{ matrix_k8s_resource_prefix }}-matrix-synapse.{{ matrix_k8s_namespace }}.svc.cluster.local:{{ matrix_synapse_container_client_api_port }}"
+    matrix_synapse_reverse_proxy_companion_client_api_addr: "{{ matrix_k8s_resource_prefix }}-matrix-synapse.{{ matrix_k8s_namespace }}.svc.cluster.local:{{ matrix_synapse_container_client_api_port }}"
 
     matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container }}"
     matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container }}"
 
-    matrix_homeserver_container_url: "http://{{ matrix_k8s_resource_prefix }}-matrix-nginx-proxy.{{ matrix_k8s_namespace }}.svc.cluster.local:12080"
-    matrix_homeserver_container_federation_url: "http://{{ matrix_k8s_resource_prefix }}-matrix-nginx-proxy.{{ matrix_k8s_namespace }}.svc.cluster.local:12088"
+    matrix_homeserver_container_url: "http://{{ matrix_k8s_resource_prefix }}-matrix-synapse-reverse-proxy-companion.{{ matrix_k8s_namespace }}.svc.cluster.local:8008"
+    matrix_homeserver_container_federation_url: "http://{{ matrix_k8s_resource_prefix }}-matrix-synapse-reverse-proxy-companion.{{ matrix_k8s_namespace }}.svc.cluster.local:8048"
 
     # Change Federation Port to 443
     matrix_nginx_proxy_proxy_matrix_federation_api_enabled: false
