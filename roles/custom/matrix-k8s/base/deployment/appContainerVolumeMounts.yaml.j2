@@ -19,4 +19,10 @@
           subPath: "{{ line.id }}"
 {% endif %}          
 {% endfor %}           
+{% if matrix_k8s_configuration.files.emptyDirs is defined and matrix_k8s_configuration.files.emptyDirs|length > 0 %}
+{% for dir in matrix_k8s_configuration.files.emptyDirs %}                    
+        - mountPath: {{ dir }}
+          name: cache-dir-{{ dir | replace("/","")}}    
+{% endfor %}
+{% endif %}
 {% endif %}
