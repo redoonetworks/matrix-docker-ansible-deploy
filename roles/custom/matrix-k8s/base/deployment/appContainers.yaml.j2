@@ -6,6 +6,13 @@
           - secretRef:
               name: {{ matrix_k8s_resource_prefix }}-{{ resourceName }}-env
 {% endif %}
+{% if matrix_k8s_configuration.environment is defined %}
+        env:
+{% for env in matrix_k8s_configuration.environment %}                    
+        - name: {{ env.name }}
+          value: {{ env.value }}
+{% endfor %}
+{% endif %}
         resources:
           {{ matrix_k8s_configuration.resources|to_nice_yaml(indent=10)|trim|indent(10) }}
 {% if matrix_k8s_configuration.ports is defined and matrix_k8s_configuration.ports|length > 0 %}          
