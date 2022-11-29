@@ -5,10 +5,12 @@
 
   roles:
     # Most of the roles below are not distributed with the playbook, but downloaded separately using `ansible-galaxy` via the `make roles` command (see `Makefile`).
-    - role: galaxy/com.devture.ansible.role.playbook_help
-
+    - when: not matrix_k8s_mode | bool
+      role: galaxy/com.devture.ansible.role.playbook_help
+      
     - role: galaxy/com.devture.ansible.role.systemd_docker_base
-
+      when: not matrix_k8s_mode | bool
+      
     - role: custom/matrix_playbook_migration
 
     - when: matrix_playbook_docker_installation_enabled | bool
