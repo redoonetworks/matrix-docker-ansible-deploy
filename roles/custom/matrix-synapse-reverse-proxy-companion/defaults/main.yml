@@ -162,3 +162,34 @@ matrix_synapse_reverse_proxy_companion_synapse_cache_proxy_cache_valid_time: "24
 # As such, it trusts the protocol scheme forwarded by the upstream proxy.
 matrix_synapse_reverse_proxy_companion_trust_forwarded_proto: true
 matrix_synapse_reverse_proxy_companion_x_forwarded_proto_value: "{{ '$http_x_forwarded_proto' if matrix_synapse_reverse_proxy_companion_trust_forwarded_proto else '$scheme' }}"
+
+matrix_synapse_reverse_proxy_companion_k8s_configuration_custom: {}
+matrix_synapse_reverse_proxy_companion_k8s_configuration_default:
+  image: "{{ matrix_synapse_reverse_proxy_companion_container_image }}"
+  boottime: 3
+  replicas: 1
+  podLabels: {}
+  ports:
+    - name: http
+      port: 8008
+    - name: federation
+      port: 8048
+  resources:
+    limits:
+      cpu: "150m"
+      memory: "128Mi"
+    requests:
+      cpu: "50m"
+      memory: "48Mi"      
+  files:
+    config:
+      - id: nginx.conf
+        src: "synapse/reverse-proxy-companion/nginx.conf"
+        dest: "/etc/nginx/nginx.conf"
+      - id: nginx-http.conf
+        src: "synapse/reverse-proxy-companion/conf.d/nginx-http.conf"
+        dest: "/etc/nginx/conf.d/nginx-http.conf"
+      - id: matrix-synapse-reverse-proxy-companion.conf
+        src: "synapse/reverse-proxy-companion/conf.d/matrix-synapse-reverse-proxy-companion.conf"
+        dest: "/etc/nginx/conf.d/matrix-synapse-reverse-proxy-companion.conf"
+    secret: []

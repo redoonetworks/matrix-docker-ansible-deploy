@@ -27,6 +27,7 @@
       dest: "{{ matrix_synapse_reverse_proxy_companion_confd_path }}/matrix-synapse-reverse-proxy-companion.conf"
 
 - name: Ensure matrix-synapse-reverse-proxy-companion nginx container image is pulled
+  when: not matrix_k8s_mode | bool
   community.docker.docker_image:
     name: "{{ matrix_synapse_reverse_proxy_companion_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
