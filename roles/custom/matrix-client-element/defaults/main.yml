@@ -136,7 +136,6 @@ matrix_client_element_configuration_extension: "{{ matrix_client_element_configu
 # You most likely don't need to touch this variable. Instead, see `matrix_client_element_configuration_default`.
 matrix_client_element_configuration: "{{ matrix_client_element_configuration_default | combine(matrix_client_element_configuration_extension, recursive=True) }}"
 
-<<<<<<< HEAD
 matrix_client_element_k8s_configuration_custom: {}
 matrix_client_element_k8s_configuration_default:
   image: "{{ matrix_client_element_docker_image }}"
@@ -170,7 +169,6 @@ matrix_client_element_k8s_configuration_default:
       # - id: nginx.conf
       #   src: client-element/nginx.conf
       #   dest: "/etc/nginx/nginx.conf"
-=======
 # Element Location sharing functionality
 # More info: https://element.io/blog/element-launches-e2ee-location-sharing/
 # How to host your own map tile server: https://matrix.org/docs/guides/map-tile-server
@@ -237,4 +235,3 @@ matrix_client_element_location_sharing_map_style_content_sources_localsource_til
 # matrix_client_element_location_sharing_map_style_content_sources_localsource_attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a> contributors"
 # Leave blank, if map does not require attribution.
 matrix_client_element_location_sharing_map_style_content_sources_localsource_attribution: ""
->>>>>>> remotes/origin/master
