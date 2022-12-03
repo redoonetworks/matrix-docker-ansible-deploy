@@ -23,12 +23,12 @@ spec:
         matchLabels:  
           role: "matrix-nginx-proxy"
           {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
-        
-{% if matrix_k8s_database_egress_network_policy is defined and matrix_k8s_database_egress_network_policy|length > 0 %}
-  - to:
-    {{ matrix_k8s_database_egress_network_policy|to_nice_yaml(indent=4)|trim|indent(4) }}
-{% endif %}
 
+    - podSelector:
+        matchLabels:  
+          role: "matrix-synapse-reverse-proxy-companion"
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
+        
   ingress:    
   - from:
     - podSelector:
@@ -39,4 +39,9 @@ spec:
     - podSelector:
         matchLabels:  
           role: matrix-corporal
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
+
+    - podSelector:
+        matchLabels:  
+          role: "matrix-synapse-reverse-proxy-companion"
           {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
