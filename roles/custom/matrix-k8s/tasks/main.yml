@@ -2,12 +2,18 @@
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
   tags:
-    - always
     - setup-k8s
+    - setup-all
   when: "matrix_k8s_mode | bool"
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
-    - always
-    - setup-k8s
+    - setup-k8s  
+    - setup-all
+  when: "matrix_k8s_mode | bool"
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/optimize_config.yml"
+  tags:
+    - setup-k8s  
+    - setup-all
   when: "matrix_k8s_mode | bool"

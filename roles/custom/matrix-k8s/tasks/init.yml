@@ -40,7 +40,7 @@
     matrix_synapse_ext_synapse_s3_storage_provider_enabled: true
 
     # Prepared Image for K8s with extendion files
-    matrix_synapse_docker_image: "ghcr.io/swarnat/matrix-synapse-k8s:v1.71.0"
+    matrix_synapse_docker_image: "ghcr.io/swarnat/matrix-synapse-k8s:v1.72.0"
 
     matrix_nginx_proxy_enabled: true
     matrix_nginx_proxy_https_enabled: false
@@ -54,7 +54,7 @@
     matrix_synapse_reverse_proxy_companion_client_api_addr: "{{ matrix_k8s_resource_prefix }}-matrix-synapse.{{ matrix_k8s_namespace }}.svc.cluster.local:{{ matrix_synapse_container_client_api_port }}"
 
     matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container }}"
-    matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container }}"
+    matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-nginx-proxy:12080' }}"
 
     matrix_homeserver_container_url: "http://{{ matrix_k8s_resource_prefix }}-matrix-synapse-reverse-proxy-companion.{{ matrix_k8s_namespace }}.svc.cluster.local:8008"
     matrix_homeserver_container_federation_url: "http://{{ matrix_k8s_resource_prefix }}-matrix-synapse-reverse-proxy-companion.{{ matrix_k8s_namespace }}.svc.cluster.local:8048"
@@ -72,4 +72,10 @@
 
     matrix_k8s_hostnames: ['{{ matrix_server_fqn_matrix }}', '{{ matrix_domain }}']
     
+    # We only allow postgres usage
+    matrix_dimension_database_engine: "postgres"
+    matrix_bot_buscarron_database_engine: "postgres"
+    matrix_bot_honoroit_database_engine: "postgres"
+
+
   when: matrix_k8s_mode | bool
