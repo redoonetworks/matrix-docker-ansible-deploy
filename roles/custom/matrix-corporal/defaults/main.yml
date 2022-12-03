@@ -105,3 +105,43 @@ matrix_corporal_configuration_extension: "{{ matrix_corporal_configuration_exten
 # Holds the final Corporal configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_corporal_configuration_default`.
 matrix_corporal_configuration: "{{ matrix_corporal_configuration_default | combine(matrix_corporal_configuration_extension, recursive=True) }}"
+
+
+matrix_corporal_k8s_configuration_custom: {}
+matrix_corporal_k8s_configuration_default:
+  image: "{{ matrix_corporal_docker_image }}"
+  boottime: 10
+  replicas: 1
+  podLabels: {}
+  defaultPodLabels:
+    communicate-homeserver: "true"
+  environment: []
+    # - name: "NTFY_VISITOR_REQUEST_LIMIT_EXEMPT_HOSTS"
+    #   value: "{{matrix_server_fqn_matrix}},localhost,10.0.0.0/8"
+  deployment:
+    command: ["/matrix-corporal"]
+    args: ["-config=/etc/matrix-corporal/config.json"]
+  ports:
+    - name: http
+      port: 41080
+    - name: api
+      port: 41081
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+    requests:
+      cpu: "100m"
+      memory: "128Mi"      
+  files:
+    emptyDirs:
+      - /var/cache/matrix-corporal/
+      - /var/matrix-corporal
+    config:
+      - id: config.json
+        src: corporal/config/config.json
+        dest: "/etc/matrix-corporal/config.json"
+    secret: []
+      # - id: nginx.conf
+      #   src: client-element/nginx.conf
+      #   dest: "/etc/nginx/nginx.conf"
