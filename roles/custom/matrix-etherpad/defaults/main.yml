@@ -104,6 +104,7 @@ matrix_etherpad_configuration: "{{ matrix_etherpad_configuration_default | combi
 matrix_etherpad_k8s_configuration_custom: {}
 matrix_etherpad_k8s_configuration_default:
   image: "{{ matrix_etherpad_docker_image }}"
+  hostname: "{{ matrix_server_fqn_etherpad }}"
   boottime: 10
   replicas: 1
   passwordVariables:
