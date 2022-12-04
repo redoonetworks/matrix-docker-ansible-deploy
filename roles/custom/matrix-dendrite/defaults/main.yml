@@ -6,7 +6,7 @@ matrix_dendrite_enabled: true
 
 matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}matrixdotorg/dendrite-monolith:{{ matrix_dendrite_docker_image_tag }}"
 matrix_dendrite_docker_image_name_prefix: "docker.io/"
-matrix_dendrite_docker_image_tag: "v0.10.7"
+matrix_dendrite_docker_image_tag: "v0.10.8"
 matrix_dendrite_docker_image_force_pull: "{{ matrix_dendrite_docker_image.endswith(':latest') }}"
 
 matrix_dendrite_base_path: "{{ matrix_base_data_path }}/dendrite"
@@ -14,6 +14,7 @@ matrix_dendrite_config_dir_path: "{{ matrix_dendrite_base_path }}/config"
 matrix_dendrite_storage_path: "{{ matrix_dendrite_base_path }}/storage"
 matrix_dendrite_media_store_path: "{{ matrix_dendrite_storage_path }}/media-store"
 matrix_dendrite_nats_storage_path: "{{ matrix_dendrite_base_path }}/nats"
+matrix_dendrite_bin_path: "{{ matrix_dendrite_base_path }}/bin"
 matrix_dendrite_ext_path: "{{ matrix_dendrite_base_path }}/ext"
 
 # By default, we make Dendrite only serve HTTP (not HTTPS).
@@ -138,7 +139,7 @@ matrix_dendrite_metrics_password: "metrics"
 
 # Postgres database information
 matrix_dendrite_database_str: "postgresql://{{ matrix_dendrite_database_user }}:{{ matrix_dendrite_database_password }}@{{ matrix_dendrite_database_hostname }}"
-matrix_dendrite_database_hostname: "matrix-postgres"
+matrix_dendrite_database_hostname: ''
 matrix_dendrite_database_user: "dendrite"
 matrix_dendrite_database_password: "itsasecret"
 matrix_dendrite_federationapi_database: "dendrite_federationapi"
@@ -151,7 +152,7 @@ matrix_dendrite_pushserver_database: "dendrite_pushserver"
 matrix_dendrite_mscs_database: "dendrite_mscs"
 
 matrix_dendrite_client_api_turn_uris: []
-matrix_dendrite_client_api_turn_client_api_shared_secret: ""
+matrix_dendrite_client_api_turn_shared_secret: ""
 matrix_dendrite_client_api_turn_allow_guests: false
 
 matrix_dendrite_disable_tls_validation: false

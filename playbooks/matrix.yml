@@ -37,7 +37,9 @@
     - custom/matrix-base
     - custom/matrix-dynamic-dns
     - custom/matrix-mailer
-    - custom/matrix-postgres
+
+    - role: galaxy/com.devture.ansible.role.postgres
+
     - custom/matrix-redis
     - custom/matrix-corporal
     - custom/matrix-bridge-appservice-discord
@@ -98,8 +100,11 @@
     - custom/matrix-nginx-proxy
     - custom/matrix-coturn
     - custom/matrix-aux
-    - custom/matrix-postgres-backup
+
+    - role: galaxy/com.devture.ansible.role.postgres_backup
+
     - custom/matrix-backup-borg
+
     - custom/matrix-user-creator
     - custom/matrix-common-after
     - custom/matrix-k8s-after    

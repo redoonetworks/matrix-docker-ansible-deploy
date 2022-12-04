@@ -2,20 +2,16 @@
 
 # Matrix (An open network for secure, decentralized communication) server setup using Ansible and Kubernetes
 
-**[This is a fork of the original repository](https://github.com/spantaleev/matrix-docker-ansible-deploy) , which makes same work, but with docker based hosting. Configuration and result will be compatible as long as the role is needed and supported.**
+**[This is a fork of the original repository](https://github.com/spantaleev/matrix-docker-ansible-deploy), which makes same work, but with docker based hosting. Configuration and result will be compatible as long as the role is needed and supported.**
 
 ## Why another repository?
 
-Generally, because the target of this repository is a little different, then the one from spantaleev. He decided to focus on docker. Especially because of the amount of knowledge he collect within that repository, it will be a waste of time to recreate everything again. So the plan was born to maintain another repository, which setup same roles, but for kubernetes.
+Generally, because the purpose of this repository is a little different, then the one from spantaleev. He decided to focus on docker. Especially because of the amount of knowledge he collect within that repository, it will be a waste of time to recreate everything again. So the plan was born to maintain another repository, which setup same roles, but for kubernetes.
 ## Purpose
 
 This [Ansible](https://www.ansible.com/) playbook is meant to help you run your own [Matrix](http://matrix.org/) homeserver, along with the [various services](#supported-services) related to that.
 
 That is, it lets you join the Matrix network using your own `@<username>:<your-domain>` identifier, all hosted on your own server (see [prerequisites](docs/prerequisites.md)).
-
-We run all services in [Docker](https://www.docker.com/) containers (see [the container images we use](docs/container-images.md)), which lets us have a predictable and up-to-date setup, across multiple supported distros (see [prerequisites](docs/prerequisites.md)) and [architectures](docs/alternative-architectures.md) (x86/amd64 being recommended).
-
-[Installation](docs/README.md) (upgrades) and some maintenance tasks are automated using [Ansible](https://www.ansible.com/) (see [our Ansible guide](docs/ansible.md)).
 
 ## Kubernetes compatibility
 
@@ -26,15 +22,51 @@ The following roles are already compatible to this deployment:
 - matrix-bridge-hookshot
 - matrix-client-element
 - matrix-client-cinny
+- matrix-corporal
 - matrix-dimension
 - matrix-etherpad
 - matrix-nginx-proxy
+- matrix-ntfy
 - matrix-synapse
 - matrix-synapse-admin
+- matrix-synapse-reverse-proxy-companion
 - matrix-user-creator
 
 ## How it works?
-Ansible will generate a helm chart within the target /matrix folder, which then is applied to the cluster. I decided to use this way, because this allows to use a perfect combination of both worlds. Some topics are harder in ansible, then in helm charts, like including configuration files in ConfigMaps.
+Ansible will generate a helm chart within the target /matrix folder, which then is applied to the cluster. The decision to go this way was done, because that allows to use a perfect combination of both worlds and stay as similar as possible to main repo. Some topics are harder in ansible, then in helm charts, like including configuration files in ConfigMaps.
+
+## Special configuration for Kubernetes
+
+This Kubernetes deployment require an external postgres server, because it is outside the scope of this project to setup a postgres cluster environment, which is easily possible on Kubernetes. So please follow [this guide](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-external-postgres.md) to setup external postgres. Also all roles are forced to use postgres.
+Make sure to create postgres databases, when you use one of the following applications:
+
+| role | configuration variables | default database name |
+| ---- | ----------------------- | --------------------- |
+| matrix_etherpad | `matrix_etherpad_database_username, matrix_etherpad_database_password, matrix_etherpad_database_name` | matrix_etherpad |
+| matrix-dimension | `matrix_dimension_database_username, matrix_dimension_database_password, matrix_dimension_database_name` | matrix_dimension |
+| matrix-bot-buscarron | `matrix_bot_buscarron_database_username, matrix_bot_buscarron_database_password, matrix_bot_buscarron_database_name` | matrix_buscarron |
+| matrix-bot-honoroit | `matrix_bot_honoroit_database_username, matrix_bot_honoroit_database_password, matrix_bot_honoroit_database_name`| matrix_honoroit |
+
+The database_name variables can be stay on default, when you only use 1 matrix setup on this database server.  
+If all postgress databases are access by same (the synapse) postgres use, then the following snippet can be used as preset in **vars.yml**:
+
+```yaml
+matrix_etherpad_database_username: '{{ matrix_synapse_database_user }}'
+matrix_etherpad_database_password: '{{ matrix_synapse_database_password }}'
+#matrix_etherpad_database_name: "matrix_etherpad"
+
+matrix_dimension_database_username: '{{ matrix_synapse_database_user }}'
+matrix_dimension_database_password: '{{ matrix_synapse_database_password }}'
+#matrix_dimension_database_name: "matrix_dimension"
+
+matrix_bot_buscarron_database_username: '{{ matrix_synapse_database_user }}'
+matrix_bot_buscarron_database_password: '{{ matrix_synapse_database_password }}'
+#matrix_bot_buscarron_database_name: 'matrix_buscarron'
+
+matrix_bot_honoroit_database_username: '{{ matrix_synapse_database_user }}'
+matrix_bot_honoroit_database_password: '{{ matrix_synapse_database_password }}'
+#matrix_bot_honoroit_database_name: 'matrix_honoroit'
+```
 
 ## Supported services
 

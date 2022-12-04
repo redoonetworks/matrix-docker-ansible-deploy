@@ -8,6 +8,7 @@
   ansible.builtin.set_fact:
     # Disable Postgres at the moment
     matrix_postgres_enabled: false
+    devture_postgres_enabled: false
 
     # Dynamic DNS not needed in k8s
     matrix_dynamic_dns_enabled: false
