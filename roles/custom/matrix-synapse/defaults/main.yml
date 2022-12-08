@@ -36,7 +36,7 @@ matrix_synapse_container_image_customizations_dockerfile_body_custom: ''
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.72.0
+matrix_synapse_version: v1.73.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -61,6 +61,7 @@ matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
 
 matrix_synapse_ext_s3_storage_provider_base_path: "{{ matrix_synapse_base_path }}/ext/s3-storage-provider"
 matrix_synapse_ext_s3_storage_provider_bin_path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/bin"
+matrix_synapse_ext_s3_storage_provider_data_path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/data"
 
 matrix_synapse_container_client_api_port: 8008
 
@@ -553,11 +554,6 @@ matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_pusher_instances: []
 
-# matrix_synapse_start_pushers controls if the main Synapse process should push out notifications or if it should be left to pusher workers (see `matrix_synapse_federation_pusher_instances`).
-# This is enabled if workers are disabled, or if they are enabled, but there are no pusher workers.
-# Adjusting this value manually is generally not necessary.
-matrix_synapse_start_pushers: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list | length == 0) }}"
-
 # matrix_synapse_workers_federation_sender_workers_count controls the number of federation sender workers to spawn.
 # See https://matrix-org.github.io/synapse/latest/workers.html#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
@@ -567,11 +563,6 @@ matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
 # What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_federation_sender_workers_count` or `matrix_synapse_workers_enabled_list`.
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_sender_instances: []
-
-# matrix_synapse_send_federation controls if the main Synapse process should send federation traffic or if it should be left to federation_sender workers (see `matrix_synapse_federation_sender_instances`).
-# This is allowed if workers are disabled, or they are enabled, but there are no federation sender workers.
-# Adjusting this value manually is generally not necessary.
-matrix_synapse_send_federation: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list | length == 0) }}"
 
 matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
