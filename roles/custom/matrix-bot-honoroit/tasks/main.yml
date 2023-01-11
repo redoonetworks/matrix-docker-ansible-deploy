@@ -1,5 +1,4 @@
 ---
-
 - block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
       when: "run_setup | bool and matrix_bot_honoroit_enabled | bool"
@@ -20,7 +19,7 @@
     - setup-bot-honoroit
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/k8s.yml"
-  when: run_setup | bool and matrix_bot_honoroit_enabled | bool and matrix_k8s_mode | bool
+  when: matrix_bot_honoroit_enabled | bool and matrix_k8s_mode | bool
   tags:
     - setup-all
     - setup-bot-honoroit

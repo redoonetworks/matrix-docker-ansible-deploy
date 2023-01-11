@@ -33,5 +33,6 @@
     - when: matrix_etherpad_enabled | bool and matrix_k8s_mode | bool
       ansible.builtin.import_tasks: "{{ role_path }}/tasks/k8s.yml"
   tags:
+    - install-all
     - setup-all
     - setup-etherpad

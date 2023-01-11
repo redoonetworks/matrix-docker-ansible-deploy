@@ -28,16 +28,23 @@ While you will need some local disk space around, it's only to accommodate usage
 
 ## Installing
 
-After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure Goofys in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure `s3-storage-provider` in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_synapse_ext_synapse_s3_storage_provider_enabled: true
 matrix_synapse_ext_synapse_s3_storage_provider_config_bucket: your-bucket-name
 matrix_synapse_ext_synapse_s3_storage_provider_config_region_name: some-region-name # e.g. eu-central-1
-matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url: https://.. # delete this whole line for Amazon S3
+matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url: https://s3.REGION_NAME.amazonaws.com # adjust this
 matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-goes-here
 matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
 matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # or STANDARD_IA, etc.
+
+# S3 Server Side Encryption with a Customer provided key (SSE-C) can also be configured as follows
+# This is not recommended unless you understand what you are doing, and may make restoring from backups additionally challenging
+# You can read more about SSE-C here: https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html
+matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled: true
+matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_key: ssec-key-goes-here # Generate with: cat /dev/urandom | base64 | head -c 32
+matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_algo: AES256
 
 # For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```

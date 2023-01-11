@@ -4,7 +4,7 @@
   become: true
 
   roles:
-    # Most of the roles below are not distributed with the playbook, but downloaded separately using `ansible-galaxy` via the `make roles` command (see `Makefile`).
+    # Most of the roles below are not distributed with the playbook, but downloaded separately using `ansible-galaxy` via the `just roles` command (see `justfile`).
     - when: not matrix_k8s_mode | bool
       role: galaxy/com.devture.ansible.role.playbook_help
       
@@ -20,19 +20,25 @@
       tags:
         - setup-docker
         - setup-all
+        - install-docker
+        - install-all
 
     - when: devture_docker_sdk_for_python_installation_enabled | bool
       role: galaxy/com.devture.ansible.role.docker_sdk_for_python
       tags:
         - setup-docker
         - setup-all
+        - install-docker
+        - install-all
 
     - when: devture_timesync_installation_enabled | bool
       role: galaxy/com.devture.ansible.role.timesync
       tags:
         - setup-timesync
         - setup-all
-    
+        - install-timesync
+        - install-all
+
     - custom/matrix-k8s
     - custom/matrix-base
     - custom/matrix-dynamic-dns
@@ -58,6 +64,7 @@
     - custom/matrix-bridge-mautrix-telegram
     - custom/matrix-bridge-mautrix-whatsapp
     - custom/matrix-bridge-mautrix-discord
+    - custom/matrix-bridge-mautrix-slack
     - custom/matrix-bridge-mx-puppet-discord
     - custom/matrix-bridge-mx-puppet-groupme
     - custom/matrix-bridge-mx-puppet-steam
@@ -75,6 +82,7 @@
     - custom/matrix-bot-postmoogle
     - custom/matrix-bot-go-neb
     - custom/matrix-bot-mjolnir
+    - custom/matrix-bot-chatgpt
     - custom/matrix-cactus-comments
     - custom/matrix-synapse
     - custom/matrix-synapse-reverse-proxy-companion
@@ -119,5 +127,6 @@
       role: galaxy/com.devture.ansible.role.playbook_state_preserver
       tags:
         - setup-all
+        - install-all
 
     - role: galaxy/com.devture.ansible.role.playbook_runtime_messages

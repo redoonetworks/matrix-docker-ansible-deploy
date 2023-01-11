@@ -1,13 +1,5 @@
 ---
 # This tasks, make some variables optional and set on a default value in kubernetes context
-- name: Optimize DB of etherpad
-  when: matrix_etherpad_database_hostname == "matrix-postgres"
-
-  ansible.builtin.set_fact:
-    matrix_etherpad_database_hostname: '{{ matrix_synapse_database_host }}'
-    matrix_etherpad_database_port: '{{ matrix_synapse_database_port }}'
-
-
 - name: Optimize DB of dimension
   when: matrix_dimension_database_hostname == "matrix-postgres"
 

@@ -1,4 +1,14 @@
 ---
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+  when: "matrix_k8s_mode | bool"
+
+# - ansible.builtin.import_tasks: "{{ role_path }}/tasks/optimize_config.yml"
+#   tags:
+#     - setup-k8s  
+#     - setup-all
+#   when: "matrix_k8s_mode | bool"
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
   tags:
@@ -6,14 +16,16 @@
     - setup-all
   when: "matrix_k8s_mode | bool"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
-  tags:
-    - setup-k8s  
-    - setup-all
-  when: "matrix_k8s_mode | bool"
+- ansible.builtin.debug:
+    msg: "{{ matrix_roles_with_database }}"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/optimize_config.yml"
-  tags:
-    - setup-k8s  
-    - setup-all
+- name: optimize database credentials
   when: "matrix_k8s_mode | bool"
+  tags:
+    - setup-k8s
+    - setup-all
+  include_tasks: "{{ role_path }}/tasks/optimze-database-credentials.yml"
+  loop: "{{ matrix_roles_with_database }}"
+  loop_control:
+    loop_var: var_pefix
+
