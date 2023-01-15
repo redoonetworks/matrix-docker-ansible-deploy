@@ -150,6 +150,10 @@ matrix_bot_honoroit_k8s_configuration_default:
   image: "{{ matrix_bot_honoroit_docker_image }}"
   boottime: 5
   replicas: 1
+  database:
+    default_name: 'honoroit'
+    default_username: 'honoroit'
+    default_password: 'some-password'
   defaultPodLabels:
     communicate-homeserver: "true"
     database: "true"

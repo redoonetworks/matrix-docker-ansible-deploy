@@ -134,6 +134,10 @@ matrix_bot_buscarron_k8s_configuration_default:
   image: "{{ matrix_bot_buscarron_docker_image }}"
   boottime: 5
   replicas: 1
+  database:
+    default_name: 'buscarron'
+    default_username: 'buscarron'
+    default_password: 'some-password'
   defaultPodLabels:
     communicate-homeserver: "true"
     database: "true"

@@ -105,6 +105,10 @@ matrix_dimension_k8s_configuration_default:
   hostname: "{{ matrix_server_fqn_dimension }}"
   boottime: 10
   replicas: 1
+  database:
+    default_name: 'matrix_dimension'
+    default_username: 'matrix_dimension'
+    default_password: 'some-password'
   passwordVariables:
     - variable: "matrix_dimension_database_connection_string"
   defaultPodLabels:

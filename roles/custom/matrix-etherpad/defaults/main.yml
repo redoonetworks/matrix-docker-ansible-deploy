@@ -107,8 +107,10 @@ matrix_etherpad_k8s_configuration_default:
   hostname: "{{ matrix_server_fqn_etherpad }}"
   boottime: 10
   replicas: 1
-  database: 
-    suffix: "matrix_etherpad"
+  database:
+    default_name: 'matrix_etherpad'
+    default_username: 'matrix_etherpad'
+    default_password: 'some-password'
   passwordVariables:
     - variable: "matrix_etherpad_database_password"
   defaultPodLabels:
