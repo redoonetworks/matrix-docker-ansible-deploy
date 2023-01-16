@@ -18,3 +18,10 @@
   tags:
     - setup-all
     - setup-mautrix-whatsapp
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/k8s.yml"
+  when: matrix_mautrix_whatsapp_enabled | bool and matrix_k8s_mode | bool
+  tags:
+    - setup-all
+    - setup-mautrix-whatsapp
+    - setup-k8s

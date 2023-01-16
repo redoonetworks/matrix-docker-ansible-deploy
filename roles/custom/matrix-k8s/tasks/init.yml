@@ -43,6 +43,10 @@
     # Prepared Image for K8s with extendion files
     matrix_synapse_docker_image: "ghcr.io/swarnat/matrix-synapse-k8s:v1.74.0"
 
+    # Enable support of WhatsApp
+    matrix_mautrix_whatsapp_database_engine: "postgres"
+    matrix_mautrix_whatsapp_appservice_address: "http://{{ matrix_k8s_resource_prefix }}-matrix-mautrix-whatsapp.{{ matrix_k8s_namespace }}.svc.cluster.local:8080"
+
     matrix_nginx_proxy_enabled: true
     matrix_nginx_proxy_https_enabled: false
     matrix_nginx_proxy_http_level_resolver: "{{ matrix_nginx_proxy_k8s_coredns_ip }}"

@@ -46,3 +46,4 @@ matrix_roles_with_database:
   - matrix_bot_buscarron
   - matrix_dimension
   - matrix_etherpad
+  - matrix_mautrix_whatsapp
