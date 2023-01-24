@@ -1,0 +1,7 @@
+{% if matrix_k8s_configuration.ports is defined and matrix_k8s_configuration.ports|length > 0 %}
+        ports:
+{% for port in matrix_k8s_configuration.ports %}
+        - containerPort: {{ port.port }}
+          name: {{ port.name }}        
+{% endfor %}
+{% endif %}

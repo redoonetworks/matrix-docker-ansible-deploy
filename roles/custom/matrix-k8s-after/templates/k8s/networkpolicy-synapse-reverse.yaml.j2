@@ -1,0 +1,34 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-synapse-reverse
+spec:
+  podSelector: 
+    matchLabels:  
+      role: "matrix-synapse-reverse-proxy-companion"
+      {{ matrix_k8s_selector|to_nice_yaml(indent=6)|trim|indent(6) }}
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+  - from:        
+# Label "communicate-homeserver: true" grant access to nginx-proxy pod to access synapse
+    - podSelector:
+        matchLabels:
+          communicate-homeserver: "true"
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
+    
+    - podSelector:
+        matchLabels:
+          role: matrix-nginx-proxy
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}
+
+  egress:
+  - to:
+      # Can talk to any pod in this helm deployment
+    - podSelector:
+        matchLabels:
+          homeserver: "true"
+          {{ matrix_k8s_selector|to_nice_yaml(indent=10)|trim|indent(10) }}

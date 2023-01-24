@@ -1,0 +1,10 @@
+---
+- ansible.builtin.set_fact:
+    matrix_nginx_proxy_k8s_svc_replacements: "{{ matrix_nginx_proxy_k8s_svc_replacements + ['matrix-hookshot'] }}"
+
+    matrix_hookshot_container_url: "{{ matrix_k8s_resource_prefix }}-matrix-hookshot.{{ matrix_k8s_namespace }}.svc.cluster.local"
+    matrix_k8s_homeserver_additional_mounts: "{{ matrix_k8s_homeserver_additional_mounts + [{'id': 'matrix-bridge-hookshot-registration.yaml', 'src': 'hookshot/registration.yml', 'dest': '/hookshot-registration.yml' }] }}"
+
+    matrix_k8s_configuration: "{{ matrix_hookshot_k8s_configuration_default|combine(matrix_hookshot_k8s_configuration_custom, recursive=true) }}"
+
+- ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/copy-yaml-files.yml"

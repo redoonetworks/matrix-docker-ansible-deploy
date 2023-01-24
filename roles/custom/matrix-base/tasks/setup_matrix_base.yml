@@ -15,9 +15,11 @@
   community.docker.docker_network:
     name: "{{ matrix_docker_network }}"
     driver: bridge
+  when: "not matrix_k8s_mode | bool"
 
 - name: Ensure remove-all script created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/bin/remove-all.j2"
     dest: "{{ matrix_bin_path }}/remove-all"
     mode: 0750
+  when: "not matrix_k8s_mode | bool"

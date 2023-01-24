@@ -29,7 +29,7 @@
           location /metrics/synapse/main-process {
             {% if matrix_nginx_proxy_enabled | default(False) %}
               {# Use the embedded DNS resolver in Docker containers to discover the service #}
-              resolver 127.0.0.11 valid=5s;
+              resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
               set $backend "matrix-synapse:{{ matrix_synapse_metrics_port }}";
               proxy_pass http://$backend/_synapse/metrics;
             {% else %}
@@ -53,7 +53,7 @@
           {% for worker in matrix_synapse_workers_enabled_list %}
           {% if worker.metrics_port != 0 %}
           location /metrics/synapse/worker/{{ worker.id }} {
-            resolver 127.0.0.11 valid=5s;
+            resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
             set $backend "{{ worker.name }}:{{ worker.metrics_port }}";
             proxy_pass http://$backend/_synapse/metrics;
             proxy_set_header Host $host;

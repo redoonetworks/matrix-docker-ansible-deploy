@@ -1,0 +1,14 @@
+---
+- ansible.builtin.set_fact:
+   matrix_k8s_rolename: "{{ role_name|basename|replace('-','_') }}"
+
+   matrix_nginx_proxy_k8s_svc_replacements: "{{ matrix_nginx_proxy_k8s_svc_replacements + [ role_name|basename ] }}"
+    
+- ansible.builtin.set_fact:
+    matrix_k8s_configuration: "{{ lookup('vars', matrix_k8s_rolename ~ '_k8s_configuration_default')|combine(lookup('vars', matrix_k8s_rolename ~ '_k8s_configuration_custom'), recursive=true) }}"
+
+- when: matrix_k8s_configuration.hostname is defined
+  ansible.builtin.set_fact:
+    matrix_k8s_hostnames: "{{ matrix_k8s_hostnames + [matrix_k8s_configuration.hostname] }}"
+
+- ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/copy-yaml-files.yml"

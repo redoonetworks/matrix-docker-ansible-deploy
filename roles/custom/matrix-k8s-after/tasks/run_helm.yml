@@ -1,0 +1,35 @@
+---
+- name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
+  kubernetes.core.helm:
+    name: "{{ helm_release_name }}"
+    chart_ref: "{{ matrix_helm_data_path }}"
+    release_namespace: "{{ matrix_k8s_namespace }}"
+    release_state: "present"
+    create_namespace: true
+    kubeconfig_path: "{{ kubeconfig_path }}"
+    values_files: 
+      - "{{ matrix_helm_data_path }}/values.yaml"
+
+# - name: Find all conf.d files inside confd directory
+#   find:
+#     paths: "{{ matrix_helm_data_path }}/templates"
+#     patterns: "*.yaml"
+#     recurse: true
+#   register: helm_template_yaml_files
+
+# - name: Add variables into first line
+#   ansible.builtin.blockinfile:
+#     path: "{{ item.path }}"
+#     insertbefore: BOF
+#     block: |
+#       {% raw %}{{-{% endraw %} $roleName := "{{ item.path | dirname | basename }}" -}}
+#       {% raw %}{{-{% endraw %} $resourceName := $roleName | replace "matrix-" "" -}}
+#       {% raw %}{{-{% endraw %} $valuesKey := $roleName | replace "-" "_" -}}
+#       {% raw %}{{-{% endraw %} $podLabels := index .Values.podLabels $valuesKey -}}
+#       {% raw %}{{-{% endraw %} $image := index .Values.matrix_k8s_images $valuesKey -}}
+#   with_items: "{{ helm_template_yaml_files.files }}"
+
+# - name: Render helm chart
+#   kubernetes.core.helm_template:
+#     chart_ref: "{{ matrix_helm_data_path }}"
+#     output_dir: "{{ matrix_base_data_path }}/helm/yamls"

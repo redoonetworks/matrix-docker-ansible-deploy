@@ -1,0 +1,103 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
+  labels:
+    app.kubernetes.io/component: signingkey-job
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
+  labels:
+    app.kubernetes.io/component: signingkey-job
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    resourceNames:
+      - {{ matrix_k8s_resource_prefix }}-synapse
+    verbs:
+      - get
+      - update
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
+  labels:
+    app.kubernetes.io/component: signingkey-job
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
+subjects:
+  - kind: ServiceAccount
+    name: {{ matrix_k8s_resource_prefix }}-signingkey-job
+    namespace: {{ matrix_k8s_namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-signingkey-job
+  labels:
+    app.kubernetes.io/component: signingkey-job
+spec:
+  ttlSecondsAfterFinished: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: signingkey-job
+    spec:
+      containers:
+        - command:
+            - sh
+            - -c
+            - |
+              echo "Generating signing key..."
+              if which generate_signing_key.py >/dev/null; then
+                generate_signing_key.py -o /synapse/keys/signing.key
+              else
+                generate_signing_key -o /synapse/keys/signing.key
+              fi
+          image: "matrixdotorg/synapse:latest"
+          imagePullPolicy: "IfNotPresent"
+          name: signing-key-generate
+          volumeMounts:
+            - mountPath: /synapse/keys
+              name: matrix-synapse-keys
+        - command:
+            - sh
+            - -c
+            - |
+              printf "Checking rights to update secret... "
+              kubectl auth can-i update secret/${SECRET_NAME}
+              /scripts/signing-key.sh
+          env:
+            - name: SECRET_NAME
+              value: {{ matrix_k8s_resource_prefix }}-synapse
+          image: "bitnami/kubectl:latest"
+          imagePullPolicy: "IfNotPresent"
+          name: signing-key-upload
+          volumeMounts:
+            - mountPath: /scripts
+              name: scripts
+              readOnly: true
+            - mountPath: /synapse/keys
+              name: matrix-synapse-keys
+              readOnly: true
+      restartPolicy: Never
+      serviceAccount: {{ matrix_k8s_resource_prefix }}-signingkey-job
+      volumes:
+        - name: scripts
+          configMap:
+            name: {{ matrix_k8s_resource_prefix }}-synapse-scripts
+            defaultMode: 0755
+        - name: matrix-synapse-keys
+          emptyDir: {}
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1

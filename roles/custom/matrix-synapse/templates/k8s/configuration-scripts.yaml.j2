@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-synapse-scripts
+data:
+{% raw %}{{{% endraw%} (.Files.Glob "scripts/*.sh").AsConfig | indent 2 }}
+

@@ -1,0 +1,18 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-db
+spec:
+  podSelector:
+    matchLabels:  
+      database: "true"
+      {{ matrix_k8s_selector|to_nice_yaml(indent=6)|trim|indent(6) }}
+
+  policyTypes:
+    - Egress
+    
+  egress:
+{% if matrix_k8s_database_egress_network_policy is defined and matrix_k8s_database_egress_network_policy|length > 0 %}
+  - to:
+    {{ matrix_k8s_database_egress_network_policy|to_nice_yaml(indent=4)|trim|indent(4) }}
+{% endif %}

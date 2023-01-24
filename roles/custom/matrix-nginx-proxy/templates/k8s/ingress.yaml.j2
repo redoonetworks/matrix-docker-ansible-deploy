@@ -1,0 +1,30 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-nginx-proxy
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "256m"
+    nginx.org/client-max-body-size: "256m"
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  rules:
+{% for hostname in matrix_k8s_hostnames %}
+    - host: {{ hostname }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ matrix_k8s_resource_prefix }}-matrix-nginx-proxy
+                port:
+                  number: 8080
+{% endfor %}
+  tls: 
+  - hosts:
+{% for hostname in matrix_k8s_hostnames %}  
+    - {{ hostname }}
+{% endfor %}
+    secretName: {{ matrix_k8s_resource_prefix }}-cert

@@ -6,8 +6,28 @@
     "driver": "sqlite3",
     "filename": "/data/development.db"
   },
+{% if matrix_appservice_webhooks_database_driver == "sqlite" %}
   "production": {
-    "driver": "sqlite3",
+    "driver": "sqlite",
     "filename": "/data/production.db"
   }
+{% endif %}
+{% if matrix_appservice_webhooks_database_driver == "postgres" %}
+  "production": {
+    "driver": "pg",
+    "dialect": "postgres",
+    "host": "{{ matrix_appservice_webhooks_database_host }}",
+    "port": "{{ matrix_appservice_webhooks_database_port }}",
+    "user": "{{ matrix_appservice_webhooks_database_username }}",
+    "password": "{{ matrix_appservice_webhooks_database_password }}",
+    "database": "{{ matrix_appservice_webhooks_database_name }}",
+    "filename": "/data/production.db",
+    "ssl": {
+      "rejectUnauthorized": false
+    },
+    "dialectOptions": {
+      "ssl": true
+    }
+  }
+{% endif %}
 }

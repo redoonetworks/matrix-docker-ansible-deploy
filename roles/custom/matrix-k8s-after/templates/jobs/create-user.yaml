@@ -1,0 +1,12 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: synapse-create-user
+spec:
+  template:
+    spec:
+      containers:
+      - name: create-user
+        image: ghcr.io/swarnat/matrix-synapse-k8s:v1.69.0
+        args: register_new_matrix_user 

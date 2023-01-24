@@ -73,3 +73,29 @@ matrix_client_hydrogen_configuration_extension: "{{ matrix_client_hydrogen_confi
 # Holds the final Hydrogen configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_client_hydrogen_configuration_default`.
 matrix_client_hydrogen_configuration: "{{ matrix_client_hydrogen_configuration_default | combine(matrix_client_hydrogen_configuration_extension, recursive=True) }}"
+
+matrix_client_hydrogen_k8s_configuration_custom: {}
+matrix_client_hydrogen_k8s_configuration_default:
+  image: "{{ matrix_client_hydrogen_docker_image }}"
+  boottime: 5
+  replicas: 1
+  podLabels: {}
+  ports:
+    - name: http
+      port: 8080
+  resources:
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+    requests:
+      cpu: "50m"
+      memory: "48Mi"      
+  files:
+    config:
+      - id: nginx.conf
+        src: client-hydrogen/nginx.conf
+        dest: "/etc/nginx/nginx.conf"
+    secret: []
+      # - id: nginx.conf
+      #   src: client-element/nginx.conf
+      #   dest: "/etc/nginx/nginx.conf"

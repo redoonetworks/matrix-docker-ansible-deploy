@@ -81,3 +81,52 @@ matrix_appservice_webhooks_registration_yaml: |
   protocols: null
 
 matrix_appservice_webhooks_registration: "{{ matrix_appservice_webhooks_registration_yaml | from_yaml }}"
+
+matrix_appservice_webhooks_database_driver: 'sqlite'
+matrix_appservice_webhooks_database_host: '{{ matrix_synapse_database_host }}'
+matrix_appservice_webhooks_database_port: '{{ matrix_synapse_database_port }}'
+matrix_appservice_webhooks_database_username: '{{ matrix_synapse_database_user }}'
+matrix_appservice_webhooks_database_password: '{{ matrix_synapse_database_password }}'
+
+matrix_appservice_webhooks_k8s_configuration_custom: {}
+matrix_appservice_webhooks_k8s_configuration_default:
+  image: "{{ matrix_appservice_webhooks_docker_image }}"
+  boottime: 10
+  replicas: 1
+  defaultPodLabels:
+    communicate-homeserver: "true"
+    database: "true"
+  podLabels: {}
+  deployment:
+    command: ["node"]
+    args: ["index.js","-p", "6789", "-c", "/config/config.yaml","-f", "/config/webhooks-registration.yaml"]
+  service:
+    name: 'matrix-appservice-webhooks'
+  ports:
+    - name: http
+      port: 6789
+  resources:
+    limits:
+      cpu: "150m"
+      memory: "128Mi"
+    requests:
+      cpu: "50m"
+      memory: "48Mi"      
+  files:
+    config:
+      - id: database.json
+        src: appservice-webhooks/data/database.json
+        dest: "/data/database.json"
+      - id: config.yaml
+        src: appservice-webhooks/config/config.yaml
+        dest: "/config/config.yaml"
+      - id: schema.yml
+        src: appservice-webhooks/config/schema.yml
+        dest: "/config/schema.yml"
+      - id: webhooks-registration.yaml
+        src: appservice-webhooks/config/webhooks-registration.yaml
+        dest: "/config/webhooks-registration.yaml"
+    secret: []
+      # - id: nginx.conf
+      #   src: client-element/nginx.conf
+      #   dest: "/etc/nginx/nginx.conf"

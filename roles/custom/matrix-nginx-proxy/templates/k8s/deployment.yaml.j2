@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-nginx-proxy
+  labels:
+    role: matrix-nginx-proxy
+    {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
+spec:
+  selector:
+    matchLabels:
+      role: matrix-nginx-proxy
+      {{ matrix_k8s_selector|to_nice_yaml(indent=6)|trim|indent(6) }}
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      annotations: 
+        checksum/matrix-conf: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/configmap.yaml") . | sha256sum }}
+      labels:
+        role: matrix-nginx-proxy
+        {{ matrix_k8s_selector|to_nice_yaml(indent=8)|trim|indent(8) }}
+    spec:
+      serviceAccountName: {{ matrix_k8s_serviceaccount }}
+      containers:
+      - image: {{ matrix_nginx_proxy_docker_image }}
+        name: {{ matrix_k8s_resource_prefix }}-nginx-proxy
+
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
+          requests:
+            cpu: "50m"
+            memory: "32Mi"
+
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 10  
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: "nginx-confd"
+          mountPath: "/etc/nginx/conf.d/"
+        - name: "nginx-wellknown"
+          mountPath: "/matrix/static-files/.well-known/matrix/"
+        - name: "nginx-conf"
+          mountPath: "/etc/nginx/nginx.conf"
+          subPath: "nginx.conf"
+        ports:
+        - containerPort: 8080
+          name: http        
+        - containerPort: 8448
+          name: federation          
+
+      volumes:
+        - name: "nginx-confd"
+          configMap:
+            name: "{{ matrix_k8s_resource_prefix }}-nginx-proxy-confd"          
+        - name: "nginx-wellknown"
+          configMap:
+            name: "{{ matrix_k8s_resource_prefix }}-nginx-proxy-wellknown"          
+        - name: "nginx-conf"
+          configMap:
+            name: "{{ matrix_k8s_resource_prefix }}-nginx-proxy-conf"          

@@ -1,0 +1,33 @@
+      containers:
+      - image: {{ matrix_k8s_configuration.image | quote }}
+        name: {{ matrix_k8s_resource_prefix }}-{{ resourceName }}
+{% if matrix_k8s_configuration.secretENV is defined %}
+        envFrom:
+          - secretRef:
+              name: {{ matrix_k8s_resource_prefix }}-{{ resourceName }}-env
+{% endif %}
+{% if matrix_k8s_configuration.environment is defined %}
+        env:
+{% for env in matrix_k8s_configuration.environment %}                    
+        - name: {{ env.name }}
+          value: {{ env.value }}
+{% endfor %}
+{% endif %}
+        resources:
+          {{ matrix_k8s_configuration.resources|to_nice_yaml(indent=10)|trim|indent(10) }}
+{% if matrix_k8s_configuration.ports is defined and matrix_k8s_configuration.ports|length > 0 %}          
+        readinessProbe:
+          tcpSocket:
+            port: {{ matrix_k8s_configuration.ports[0].port }}
+          initialDelaySeconds: {{ matrix_k8s_configuration.boottime }}
+          periodSeconds: 5
+{% endif %}          
+        imagePullPolicy: Always
+{% if matrix_k8s_configuration.deployment.command is defined %}
+        command: {{ matrix_k8s_configuration.deployment.command | to_json  }}
+{% endif %}
+{% if matrix_k8s_configuration.deployment.args is defined %}
+        args: {{ matrix_k8s_configuration.deployment.args | to_json  }}
+{% endif %}
+
+{%- include 'roles/custom/matrix-k8s/base/deployment/appContainerVolumeMounts.yaml.j2' %}

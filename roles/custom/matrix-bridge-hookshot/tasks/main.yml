@@ -22,8 +22,16 @@
     - install-hookshot
 
 - block:
-    - when: not matrix_hookshot_enabled | bool
+    - when: not matrix_hookshot_enabled | bool and not matrix_k8s_mode | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  tags:
+    - setup-all
+    - setup-hookshot
+
+# K8s processing
+- block:
+    - when: matrix_hookshot_enabled | bool and matrix_k8s_mode | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/k8s.yml"
   tags:
     - setup-all
     - setup-hookshot

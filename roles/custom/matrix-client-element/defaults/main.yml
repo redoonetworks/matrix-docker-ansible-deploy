@@ -136,6 +136,40 @@ matrix_client_element_configuration_extension: "{{ matrix_client_element_configu
 # You most likely don't need to touch this variable. Instead, see `matrix_client_element_configuration_default`.
 matrix_client_element_configuration: "{{ matrix_client_element_configuration_default | combine(matrix_client_element_configuration_extension, recursive=True) }}"
 
+matrix_client_element_k8s_configuration_custom: {}
+matrix_client_element_k8s_configuration_default:
+  image: "{{ matrix_client_element_docker_image }}"
+  boottime: 5
+  replicas: 1
+  hostname: "{{ matrix_server_fqn_element }}"
+  podLabels: {}
+  ports:
+    - name: http
+      port: 8080
+  resources:
+    limits:
+      cpu: "150m"
+      memory: "128Mi"
+    requests:
+      cpu: "50m"
+      memory: "48Mi"      
+  files:
+    config:
+      - id: nginx.conf
+        src: client-element/nginx.conf
+        dest: "/etc/nginx/nginx.conf"
+      - id: config.json
+        src: client-element/config.json
+        dest: "/app/config.json"
+      - id: welcome.html
+        src: client-element/welcome.html
+        dest: "/app/welcome.html"
+      - id: config.json
+        dest: "/app/config.{{ matrix_server_fqn_element }}.json"
+    secret: []
+      # - id: nginx.conf
+      #   src: client-element/nginx.conf
+      #   dest: "/etc/nginx/nginx.conf"
 # Element Location sharing functionality
 # More info: https://element.io/blog/element-launches-e2ee-location-sharing/
 # How to host your own map tile server: https://matrix.org/docs/guides/map-tile-server

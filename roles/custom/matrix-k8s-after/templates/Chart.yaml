@@ -1,0 +1,11 @@
+---
+apiVersion: v2
+name: ansible-matrix-kubernetes
+description: Ansible based Matrix Deployment
+appVersion: 1.0.0
+
+type: application
+version: 1.69.0
+maintainers:
+  - name: Redoo Networks GmbH
+    email: developer@redoo-networks.com

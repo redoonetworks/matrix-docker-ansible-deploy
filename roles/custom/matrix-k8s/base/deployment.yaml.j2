@@ -1,0 +1,51 @@
+{% if matrix_k8s_configuration.passwordVariables is defined and matrix_k8s_configuration.passwordVariables|length > 0 and matrix_k8s_configuration.files.config is defined and matrix_k8s_configuration.files.config|length > 0 %}
+{% set useDataRaw = true %}
+{% else %}
+{% set useDataRaw = false %}
+{% endif %}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-{{ resourceName }}
+  labels:
+    role: {{ normalizedRoleName }}
+    {{ matrix_k8s_selector|to_nice_yaml(indent=4)|trim|indent(4) }}
+spec:
+  selector:
+    matchLabels:
+      role: {{ normalizedRoleName }}
+      {{ matrix_k8s_selector|to_nice_yaml(indent=6)|trim|indent(6) }}
+  strategy:
+    type: RollingUpdate
+  replicas: {{ matrix_k8s_configuration.replicas }}
+  template:
+    metadata:
+      annotations: 
+{% if matrix_k8s_configuration.files.config is defined and matrix_k8s_configuration.files.config|length > 0 %}      
+        checksum/config: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/configmap.yaml") . | sha256sum }}
+{% endif %}
+{% if matrix_k8s_configuration.files.secret is defined and matrix_k8s_configuration.files.secret|length > 0 %}      
+        checksum/secret: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/secret.yaml") . | sha256sum }}
+{% endif %}
+{% if matrix_k8s_configuration.secretENV is defined %}      
+        checksum/secret_env: {% raw %}{{{% endraw %} include (print $.Template.BasePath "/{{ normalizedRoleName }}/secret-env.yaml") . | sha256sum }}
+{% endif %}
+      labels:
+        role: {{ normalizedRoleName }}
+        {{ matrix_k8s_selector|to_nice_yaml(indent=8)|trim|indent(8) }}
+{% if matrix_k8s_configuration.defaultPodLabels is defined and matrix_k8s_configuration.defaultPodLabels|length > 0 %}
+        {{ matrix_k8s_configuration.defaultPodLabels|to_nice_yaml(indent=8)|trim|indent(8) }}
+{% endif %}
+{% if matrix_k8s_configuration.podLabels is defined and matrix_k8s_configuration.podLabels|length > 0 %}
+        {{ matrix_k8s_configuration.podLabels|to_nice_yaml(indent=8)|trim|indent(8) }}
+{% endif %}
+    spec:
+      serviceAccountName: {{ matrix_k8s_serviceaccount }}
+{% if useDataRaw %}
+{% include 'roles/custom/matrix-k8s/base/deployment/init-container.yaml.j2' %}
+{% endif %}
+{%- include 'roles/custom/matrix-k8s/base/deployment/appContainers.yaml.j2' %}
+
+{%- include 'roles/custom/matrix-k8s/base/deployment/ports.yaml.j2' %}
+{%- include 'roles/custom/matrix-k8s/base/deployment/volumes.yaml.j2' %}

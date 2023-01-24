@@ -39,3 +39,11 @@
     matrix_nginx_proxy_role_executed: true
   tags:
     - always
+
+#  K8s processing
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/k8s.yml"
+  when: run_setup | bool
+  tags:
+    - setup-all
+    - setup-nginx-proxy
+

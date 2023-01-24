@@ -61,6 +61,7 @@
   when: "matrix_bot_maubot_container_image_self_build|bool"
 
 - name: Ensure matrix-bot-maubot.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-maubot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-maubot.service"

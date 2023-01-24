@@ -128,3 +128,38 @@ matrix_bot_buscarron_smtp_validation: false
 # matrix_bot_buscarron_environment_variables_extension: |
 #   BUSCARRON_LOGLEVEL=DEBUG
 matrix_bot_buscarron_environment_variables_extension: ''
+
+matrix_bot_buscarron_k8s_configuration_custom: {}
+matrix_bot_buscarron_k8s_configuration_default:
+  image: "{{ matrix_bot_buscarron_docker_image }}"
+  boottime: 5
+  replicas: 1
+  database:
+    default_name: 'buscarron'
+    default_username: 'buscarron'
+    default_password: 'some-password'
+  defaultPodLabels:
+    communicate-homeserver: "true"
+    database: "true"
+    internet: "true"
+  podLabels: {}
+  secretENV: buscarron/config/env
+  ports:
+    - name: http
+      port: 8080
+  resources:
+    limits:
+      cpu: "150m"
+      memory: "128Mi"
+    requests:
+      cpu: "50m"
+      memory: "48Mi"      
+  files:
+    config: []
+      # - id: env
+      #   src: buscarron/config/env
+      #   dest: "/data/config/env"
+    secret: []
+      # - id: env
+      #   src-env: buscarron/config/env
+      #   dest: "/data/config/env"

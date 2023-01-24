@@ -147,3 +147,44 @@ matrix_mautrix_whatsapp_registration_yaml: |
   de.sorunome.msc2409.push_ephemeral: true
 
 matrix_mautrix_whatsapp_registration: "{{ matrix_mautrix_whatsapp_registration_yaml | from_yaml }}"
+
+matrix_mautrix_whatsapp_k8s_configuration_custom: {}
+matrix_mautrix_whatsapp_k8s_configuration_default:
+  image: "{{ matrix_mautrix_whatsapp_docker_image }}"
+  boottime: 3
+  replicas: 1
+  services:
+    name: matrix-mautrix-whatsapp
+  database:
+    default_name: 'matrix_mautrix_whatsapp'
+    default_username: 'matrix_mautrix_whatsapp'
+    default_password: 'some-password'
+  passwordVariables: []
+    # - variable: "matrix_mautrix_whatsapp_appservice_database_uri"
+  defaultPodLabels:
+    communicate-homeserver: "true"
+    database: "true"
+    internet: "true"
+  podLabels: {}
+  deployment:
+    command: ["/usr/bin/mautrix-whatsapp"]
+    args: ["-c", "/config/config.yaml", "-r", "/config/registration.yaml"] # ,"--credentials","/data/credentials.json","--sessionkey","/data/sessionkey.json","--apikey","/data/apijey.json"
+  ports:
+    - name: http
+      port: 8080
+  resources:
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+    requests:
+      cpu: "150m"
+      memory: "128Mi"      
+  files:
+    config:
+      - id: config.yaml
+        src: mautrix-whatsapp/config/config.yaml
+        dest: "/config/config.yaml"
+    secret:
+      - id: registration.yaml
+        src: mautrix-whatsapp/config/registration.yaml
+        dest: "/config/registration.yaml"

@@ -1,0 +1,47 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ matrix_k8s_resource_prefix }}-synapse-create-user
+spec:
+  ttlSecondsAfterFinished: 0
+  template:
+    metadata:
+      labels:
+        communicate-homeserver: 'true'  
+    spec:
+      restartPolicy: Never
+      serviceAccount: {{ matrix_k8s_serviceaccount }}
+      containers:
+{% set count = 1 %}
+{% for user in matrix_user_creator_users_auto %}      
+      - name: create-user-{{ count }}
+        image: {{ matrix_synapse_docker_image }}
+        command: ["register_new_matrix_user"]
+        args: [
+            "--user","{{ user.username }}",
+            "--password","{{ user.initial_password }}",
+            "--config","/data/homeserver.yaml",
+            {% if user.initial_type == 'admin' %}
+                "--admin",
+            {% else %}
+                "--no-admin",
+                {% if user.initial_type != 'user' %}
+                "--user_type={{ user.initial_type }}",
+                {% endif %}
+            {% endif %}
+            "https://matrix.chat.hohndorf.club"
+            ]
+        volumeMounts:
+        - name: "config"
+          mountPath: "/data/homeserver.yaml"
+          subPath: "homeserver.yaml"
+{% set count = count + 1 %}          
+{% endfor %}          
+      volumes:
+        - name: "config"
+          configMap:
+            name: "{{ matrix_k8s_resource_prefix }}-synapse"      
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1                

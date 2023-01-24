@@ -1,0 +1,4 @@
+---
+# Define these variables and copy helm templates:
+# matrix_k8s_rolename, matrix_nginx_proxy_k8s_svc_replacements, matrix_k8s_configuration, matrix_k8s_hostnames
+- ansible.builtin.import_tasks: "roles/custom/matrix-k8s/tasks/subtasks/default-processing.yml"

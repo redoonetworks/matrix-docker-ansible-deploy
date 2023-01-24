@@ -83,6 +83,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-appservice-slack.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-slack.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-slack.service"

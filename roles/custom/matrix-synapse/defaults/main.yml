@@ -933,3 +933,49 @@ matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extensi
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
 matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml | from_yaml | combine(matrix_synapse_configuration_extension, recursive=True) }}"
+
+
+matrix_synapse_k8s_configuration_custom: {}
+matrix_synapse_k8s_configuration_default:
+  image: "{{ matrix_synapse_docker_image }}"
+  boottime: 5
+  replicas: 1
+  passwordVariables:
+    - variable: "matrix_synapse_macaroon_secret_key"
+    - variable: "matrix_synapse_database_password"
+    - variable: "matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key"
+    - variable: "matrix_synapse_ext_password_provider_ldap_bind_password"
+    - variable: "matrix_synapse_ext_password_provider_ldap_bind_password"
+    - variable: "matrix_synapse_ext_password_provider_ldap_bind_password"
+  defaultPodLabels:
+    homeserver: "true"
+    internet: "true"
+    database: "true"
+  podLabels:
+  configMapLabels: {}
+  secretLabels: 
+    app.kubernetes.io/component: signingkey-job
+  serviceLabels: {}
+  ports:
+    - name: http
+      port: 8008
+    - name: federation
+      port: 8448
+  resources:
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+    requests:
+      cpu: "150m"
+      memory: "64Mi"      
+  files:
+    config:
+      - id: homeserver.yaml
+        src: synapse/config/homeserver.yaml
+        dest: "/data/homeserver.yaml"
+      - id: matrix.chat.hohndorf.club.log.config
+        src: synapse/config/{{ matrix_server_fqn_matrix }}.log.config
+        dest: "/data/{{ matrix_server_fqn_matrix }}.log.config"
+    secret:
+      - id: signing.key
+        dest: "/data/{{ matrix_server_fqn_matrix }}.signing.key"

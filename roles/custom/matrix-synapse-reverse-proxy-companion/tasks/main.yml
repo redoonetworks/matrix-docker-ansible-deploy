@@ -18,3 +18,14 @@
     - setup-all
     - setup-synapse-reverse-proxy-companion
     - setup-synapse
+
+
+#  K8s processing
+- block:
+    - when: matrix_synapse_reverse_proxy_companion_enabled | bool
+      ansible.builtin.import_tasks: "{{ role_path }}/tasks/k8s.yml"
+  tags:
+    - setup-all
+    - setup-synapse-reverse-proxy-companion
+    - setup-synapse
+

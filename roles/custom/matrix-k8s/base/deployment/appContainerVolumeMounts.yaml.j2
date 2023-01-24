@@ -1,0 +1,28 @@
+{% if (matrix_k8s_configuration.files.config is defined and matrix_k8s_configuration.files.config|length > 0) or 
+      (matrix_k8s_configuration.files.secret is defined and matrix_k8s_configuration.files.secret|length > 0) %}
+        volumeMounts:
+{% if useDataRaw %}        
+        - mountPath: /data
+          name: config-volume       
+{% endif %}
+{% for line in matrix_k8s_configuration.files.config %}
+{% if not useDataRaw or "/data/" not in line.dest %}
+        - name: "config"
+          mountPath: "{{ line.dest }}"
+          subPath: "{{ line.id }}"
+{% endif %}
+{% endfor %}
+{% for line in matrix_k8s_configuration.files.secret %}
+{% if not useDataRaw or "/data/" not in line.dest %}
+        - name: "secret"
+          mountPath: "{{ line.dest }}"
+          subPath: "{{ line.id }}"
+{% endif %}          
+{% endfor %}           
+{% if matrix_k8s_configuration.files.emptyDirs is defined and matrix_k8s_configuration.files.emptyDirs|length > 0 %}
+{% for dir in matrix_k8s_configuration.files.emptyDirs %}                    
+        - mountPath: {{ dir }}
+          name: cache-dir-{{ dir | replace("/","")}}    
+{% endfor %}
+{% endif %}
+{% endif %}

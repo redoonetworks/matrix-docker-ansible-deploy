@@ -111,6 +111,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-mx-puppet-groupme.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-groupme.service.j2"
     dest: "/etc/systemd/system/matrix-mx-puppet-groupme.service"

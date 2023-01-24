@@ -121,6 +121,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-go-skype-bridge.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-go-skype-bridge.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-go-skype-bridge.service"

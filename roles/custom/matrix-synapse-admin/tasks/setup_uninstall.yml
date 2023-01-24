@@ -1,6 +1,7 @@
 ---
 
 - name: Check existence of matrix-synapse-admin service
+  when: not matrix_systemd_enabled | bool
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-admin.service"
   register: matrix_synapse_admin_service_stat

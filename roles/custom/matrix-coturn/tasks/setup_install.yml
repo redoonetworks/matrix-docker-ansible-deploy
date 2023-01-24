@@ -17,7 +17,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_coturn_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_coturn_docker_image_force_pull }}"
-  when: "not matrix_coturn_container_image_self_build | bool"
+  when: "not matrix_coturn_container_image_self_build | bool and not matrix_k8s_mode |bool"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -66,8 +66,10 @@
   community.docker.docker_network:
     name: "{{ matrix_coturn_docker_network }}"
     driver: bridge
+  when: "not matrix_k8s_mode | bool"
 
 - name: Ensure matrix-coturn.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-coturn.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-coturn.service"
@@ -83,7 +85,7 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ item }}"
     mode: 0644
   register: "matrix_coturn_systemd_service_change_results"
-  when: "matrix_coturn_tls_enabled | bool"
+  when: "matrix_coturn_tls_enabled | bool and matrix_systemd_enable | bool"
   with_items:
     - matrix-coturn-reload.service
     - matrix-coturn-reload.timer
@@ -94,7 +96,7 @@
     path: "{{ item }}"
     state: absent
   register: "matrix_coturn_systemd_service_change_results"
-  when: "not matrix_coturn_tls_enabled | bool"
+  when: "not matrix_coturn_tls_enabled | bool and matrix_systemd_enable | bool"
   with_items:
     - matrix-coturn-reload.service
     - matrix-coturn-reload.timer
@@ -102,4 +104,4 @@
 - name: Ensure systemd reloaded if systemd units changed
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_coturn_systemd_service_change_results.changed"
+  when: "matrix_coturn_systemd_service_change_results.changed and matrix_systemd_enable | bool"

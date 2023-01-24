@@ -1,0 +1,25 @@
+{% if (matrix_k8s_configuration.files.config is defined and matrix_k8s_configuration.files.config|length > 0) or (matrix_k8s_configuration.files.secret is defined and matrix_k8s_configuration.files.secret|length > 0) or (matrix_k8s_configuration.files.emptyDirs is defined and matrix_k8s_configuration.files.emptyDirs|length > 0) %}
+      volumes:
+{% if useDataRaw %}      
+        - name: config-volume
+          emptyDir:
+            sizeLimit: 10Mi
+{% endif %}
+{% if matrix_k8s_configuration.files.emptyDirs is defined and matrix_k8s_configuration.files.emptyDirs|length > 0 %}
+{% for dir in matrix_k8s_configuration.files.emptyDirs %}                    
+        - name: cache-dir-{{ dir | replace("/","")}}
+          emptyDir:
+            sizeLimit: 32Mi
+{% endfor %}
+{% endif %}
+{% if matrix_k8s_configuration.files.config is defined and matrix_k8s_configuration.files.config|length > 0 %}
+        - name: "config"
+          configMap:
+            name: "{{ matrix_k8s_resource_prefix }}-{{ resourceName }}"          
+{% endif %}
+{% if matrix_k8s_configuration.files.secret is defined and matrix_k8s_configuration.files.secret|length > 0 %}
+        - name: "secret"
+          secret:
+            secretName: "{{ matrix_k8s_resource_prefix }}-{{ resourceName }}"          
+{% endif %}
+{% endif %}

@@ -1,0 +1,11 @@
+---
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_helm.yml"
+  tags:
+    - always
+  when: "matrix_k8s_mode | bool"
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/run_helm.yml"
+  tags:
+    - k8s_deployment
+  when: "matrix_k8s_mode | bool"
+  

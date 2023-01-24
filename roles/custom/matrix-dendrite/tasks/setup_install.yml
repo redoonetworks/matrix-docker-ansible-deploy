@@ -38,8 +38,10 @@
     force_source: "{{ matrix_dendrite_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dendrite_docker_image_force_pull }}"
   register: result
+  when: "not matrix_k8s_mode | bool"  
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
+
   until: result is not failed
 
 - name: Check if a Dendrite signing key exists
@@ -77,6 +79,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-dendrite.service installed
+  when: "matrix_systemd_enable | bool"
   ansible.builtin.template:
     src: "{{ role_path }}/templates/dendrite/systemd/matrix-dendrite.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dendrite.service"

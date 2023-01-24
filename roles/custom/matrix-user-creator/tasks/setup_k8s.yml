@@ -1,0 +1,16 @@
+---
+- name: Ensure helm templates folder exists
+  ansible.builtin.file:
+    path: "{{ matrix_helm_data_path }}/templates/matrix-user-creator"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: copy helm templates
+  ansible.builtin.template:
+    src: "roles/custom/matrix-user-creator/templates/k8s/auto-create-bot-users.yaml.j2"
+    dest: "{{ matrix_helm_data_path }}/templates/matrix-user-creator/auto-create-bot-users.yaml"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0660
