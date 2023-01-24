@@ -13,7 +13,7 @@
   version: 327d2e17f5189ac2480d6012f58cf64a2b46efba
 
 - src: git+https://github.com/devture/com.devture.ansible.role.timesync.git
-  version: 660f384f176a9ea3b5cc702bde39e7dc10bf6186
+  version: 3d5bb2976815958cdce3f368fa34fb51554f899b
 
 - src: git+https://github.com/devture/com.devture.ansible.role.playbook_state_preserver.git
   version: ff2fd42e1c1a9e28e3312bbd725395f9c2fc7f16
@@ -29,3 +29,6 @@
 
 - src: git+https://github.com/devture/com.devture.ansible.role.playbook_runtime_messages.git
   version: 9b4b088c62b528b73a9a7c93d3109b091dd42ec6
+
+- src: git+https://gitlab.com/etke.cc/roles/prometheus_node_exporter.git
+  version: v1.5.0-0
